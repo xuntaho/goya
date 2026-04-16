@@ -1,0 +1,417 @@
+
+.logo img {
+    width: 120px;   /* chỉnh nhỏ lại */
+    height: auto;
+}
+.custom {
+    padding : 0;
+}
+.custom:focus {
+    border: none;
+}
+.main-header.header-one .main-menu .navbar-collapse .navigation .active {
+    background: var(--primary-color);
+}
+.user-menu {
+    position: relative;
+}
+
+.dropdown-menu-custom {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    top: 70px;
+    right: 0px;
+    background: white;
+    width: 180px;
+    border: 1px solid #ddd;
+    display: none;
+    z-index: 1000;
+}
+
+.dropdown-menu-custom li a {
+    display: block;
+    padding: 10px 15px;
+    color: #333;
+    text-decoration: none;
+}
+.dropdown-menu-custom li a:hover {
+    background: var(--primary-color);
+    
+}
+
+.menu-sidebar {
+    position: relative;
+    z-index: 1000;
+}
+
+.dropdown-menu-custom {
+    z-index: 1001;
+}
+.dropdown-menu-custom li {
+    border-bottom: 1px solid #ddd;
+}
+ /* .hh {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    height: 100%;
+}  */
+.destination-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.destination-item .image img {
+    height: 180px;
+    object-fit: cover;
+}
+
+.destination-item .content {
+    height: 230px;
+}
+
+.destination-item .location {
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.destination-item .content h5 {
+    display:  block;
+    -webkit-line-clamp:3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.destination-item .time {
+    height: 20px;
+}
+
+.destination-footer {
+    margin-top: auto;
+}
+.tour-gallery [class*="col-"] {
+    padding: 0 !important;
+}
+
+.tour-gallery .row {
+    display: flex;
+    flex-wrap: wrap;
+    margin: 0 !important; 
+    gap: 5px; 
+}
+
+.tour-gallery > .container-fluid > .row > .col-lg-6 {
+    width: calc(50% - 2.5px) !important;
+    flex: 0 0 auto;
+}
+
+.tour-gallery .col-lg-6 .col-6 {
+    width: calc(50% - 2.5px) !important;
+    flex: 0 0 auto;
+}
+.gallery-item {
+    width: 100%;
+    height: 100%;
+}
+.gallery-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block; /* Tránh khoảng hở nhỏ dưới chân ảnh */
+}
+.destination-item h5 a,
+.destination-item h6 a {
+    text-decoration: none;
+    color: #222;
+    transition: all 0.3s ease;
+}
+
+.destination-item h5 a:hover,
+.destination-item h6 a:hover {
+    text-decoration: underline;
+}
+
+/* FIX LỖI GIÁ TIỀN VÀ KHOẢNG CÁCH TOUR */
+
+/* 1. Đảm bảo các item trong cùng một hàng có độ cao bằng nhau */
+.row {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+/* 2. Cấu trúc lại item để đẩy footer xuống đáy */
+.destination-item {
+    display: flex;
+    flex-direction: column;
+    height: 100%; /* Bắt buộc để các card bằng nhau */
+    margin-bottom: 20px; /* Tạo khoảng cách an toàn giữa hàng trên và hàng dưới */
+    /* Đảm bảo nền trắng để không bị lộ khi đè */
+}
+
+/* 3. Phần nội dung chính (Tiêu đề, info) */
+.destination-item .content {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1; /* Chiếm hết không gian còn trống để đẩy footer xuống */
+    height: auto !important; 
+    padding: 20px;/* Ghi đè lại height: 230px nếu nó đang gây lỗi */
+    min-height: 200px; /* Giữ một độ cao tối thiểu để đồng bộ */
+    padding-bottom: 15px;
+}
+.destination-item .content h6 {
+    display:  block;
+    -webkit-line-clamp:3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.destination-item .content h6 a {
+    color: black;
+}
+.hover-underline {
+    text-decoration: none; /* Bỏ gạch chân mặc định */
+}
+
+.hover-underline:hover {
+    text-decoration: underline; /* Hiện gạch chân khi di chuột */
+}
+/* Khoảng cách giữa các hàng tour */
+.tour-grid-wrap .row > [class*="col-"] {
+    margin-bottom: 30px; /* Tạo khoảng cách an toàn 30px giữa các hàng */
+}
+
+
+.filter_clear {
+    display: flex;
+    justify-content: end;
+}
+.clear_filter {
+    color:  #fff;
+    background-color: var(--bs-green);
+    border-radius: 8px;
+    padding: 2px 20px;
+}
+
+
+        /* Layout */
+        
+        .checkout-container {
+            max-width: 1200px;
+            margin: auto;
+            padding-top: 20px;
+            display: flex;
+            gap: 24px;
+        }
+
+        .checkout-container {
+            .checkout__infor {
+                background-color: #F6F8FA;
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                border: none;
+                gap: 16px;
+                padding: 30px;
+            }
+
+            .checkout-info {
+                flex: 1;
+            }
+
+            .checkout-summary {
+                width: 400px;
+            }
+
+            /* Header */
+            .checkout-header {
+                margin-bottom: 30px;
+                font-size: 24px;
+                font-weight: 700;
+            }
+
+            /* Form Styling */
+
+            .checkout__infor .form-group label {
+                font-weight: 600;
+                font-size: 1rem;
+            }
+
+            .checkout__infor .form-group input {
+                width: 100%;
+                height: 56px;
+                padding: 16px 17px;
+                font-size: 1rem;
+                border: 0px solid #E2E4E5;
+                border-radius: 5px;
+            }
+
+            /* Quantity Selector */
+            .checkout__quantity {
+                display: flex;
+                gap: 24px;
+            }
+
+            .quantity-selector {
+                width: 50%;
+                display: flex;
+                align-items: center;
+                border: 1px solid #E2E4E5;
+                padding: 20px;
+                justify-content: space-between;
+                gap: 48px;
+            }
+
+            .input__quanlity {
+                display: flex;
+                gap: 16px;
+            }
+
+            .quantity-btn {
+                width: 30px;
+                height: 30px;
+                background-color:  #f9f9f9;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                font-weight: bold;
+                border-radius: 5px;
+                border: 2px solid #63AB45;
+                color: #63AB45;
+            }
+
+            .quantity-input {
+                padding: 0;
+                width: 30px;
+                text-align: center;
+                border: none;
+                font-size: 24px;
+                line-height: 1;
+                letter-spacing: 0em;
+                font-weight: 500;
+                color: #63AB45;
+            }
+
+            /* Payment Options */
+            .payment-option {
+                margin-bottom: 15px;
+                padding: 15px;
+                border: 1px solid #E2E4E5;
+                border-radius: 5px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            }
+
+            .payment-option img {
+                width: 40px;
+            }
+
+            /* Privacy Agreement */
+            .privacy-section {
+                margin-top: 20px;
+                margin-bottom: 20px;
+                padding: 20px;
+                background-color: #F9F9F9;
+                border-radius: 5px;
+                font-size: 1rem;
+                color: #333;
+                text-align: center;
+            }
+
+            .privacy-checkbox {
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                margin-top: 10px;
+                justify-content: center;
+            }
+
+            /* Order Summary */
+            .order-summary {
+                border-top: 1px solid #D6D6D6;
+                margin-top: 20px;
+                padding-top: 20px;
+            }
+
+            .summary-item {
+                display: flex;
+                justify-content: space-between;
+                margin-bottom: 10px;
+            }
+
+            .total-price, .quantity_adult, .quantity_child, .child_total, .adult_total, .discount_price {
+                font-weight: bold;
+                font-size: 1.2rem;
+            }
+
+            /* Button */
+            .checkout-btn {
+                width: 100%;
+                padding: 15px;
+                background-color: orange;
+                color: white;
+                font-weight: 700;
+                font-size: 1.1rem;
+                border: none;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+
+            .summary-section {
+                padding: 16px;
+                box-shadow: 10px 10px 36px rgba(0, 0, 0, 0.08);
+                position: sticky;
+                top: 50px;
+            }
+            
+            .order-coupon{
+                border-top: 1px solid #D6D6D6;
+                margin: 20px 0;
+                padding: 20px 0;
+                display: flex;
+                justify-content: space-between;
+                gap: 2px;
+                border-bottom: 1px solid #D6D6D6;
+            }
+            .order-coupon input{
+                border-radius: 8px;
+                boder: 1px solid #797914;
+            }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .checkout-container {
+                flex-direction: column;
+            }
+
+            .checkout-summary {
+                width: 100%;
+                margin-top: 20px;
+            }
+        }
+  .ratting i.active {
+    color: var(--secondary-color);
+}
+textarea.form-control {
+    background-color: #fff; /* nền trắng rõ */
+    border: 2px solid #ff7a00; /* viền cam nổi bật */
+    border-radius: 10px;
+    padding: 12px;
+    font-size: 15px;
+    transition: all 0.3s ease;
+}
+
+/* hover càng nổi hơn */
+textarea.form-control:hover {
+    border-color: #ff5500;
+}
+
+/* khi click thì glow nhẹ */
+textarea.form-control:focus {
+    box-shadow: 0 0 8px rgba(255, 122, 0, 0.5);
+    outline: none;
+}
