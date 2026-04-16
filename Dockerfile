@@ -1,32 +1,27 @@
 FROM php:8.3-apache
 
-
 RUN apt-get update && apt-get install -y \
     unzip curl git libzip-dev \
     && docker-php-ext-install zip pdo pdo_mysql
 
-
 COPY . /var/www/html/
 WORKDIR /var/www/html
 
-
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
-
 
 RUN composer install --no-dev --optimize-autoloader
 
 
-RUN cp .env.example .env || true
 RUN php artisan key:generate || true
-RUN php artisan config:cache || true
 
+# Clear config để đọc ENV từ Render
+RUN php artisan config:clear
+RUN php artisan cache:clear
 
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 775 storage bootstrap/cache
-
 
 RUN a2enmod rewrite
 RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
 
 CMD ["apache2-foreground"]
-RUN php artisan config:clear && php artisan cache:clear
