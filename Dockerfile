@@ -11,11 +11,15 @@ COPY . /var/www/html/
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 RUN composer install --no-dev --optimize-autoloader
 
-
 RUN chown -R www-data:www-data /var/www/html
 RUN chmod -R 775 storage bootstrap/cache
 
 RUN a2enmod rewrite
-RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+
+ENV PORT=10000
+EXPOSE 10000
+RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf && \
+    sed -i 's/:80/:${PORT}/g' /etc/apache2/sites-available/000-default.conf
 
 CMD ["apache2-foreground"]
