@@ -17,6 +17,15 @@ RUN chmod -R 775 storage bootstrap/cache
 RUN a2enmod rewrite
 
 
+RUN sed -i 's!/var/www/html!/var/www/html/public!g' /etc/apache2/sites-available/000-default.conf
+
+
+RUN echo "<Directory /var/www/html/public>\n\
+    AllowOverride All\n\
+    Require all granted\n\
+</Directory>" >> /etc/apache2/apache2.conf
+
+
 ENV PORT=10000
 EXPOSE 10000
 RUN sed -i 's/80/${PORT}/g' /etc/apache2/ports.conf && \
