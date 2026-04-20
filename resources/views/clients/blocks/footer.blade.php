@@ -20,7 +20,7 @@
                                     <h5>Dịch vụ</h5>
                                 </div>
                                 <ul class="list-style-three">
-                                     <li><a href="{{ route('huongdanvien') }}">Hướng dẫn viên tốt nhất</a></li>
+                                     <li><a href="{{ route('huongdanvien') }}">Hướng dẫn viên</a></li>
                                     <li><a href="{{ route('tours') }}">Đặt tour</a></li>
                                     <li><a href="{{ route('noiden') }}">Đặt khách sạn</a></li>
                                     <li><a href="{{ route('noiden') }}">Đặt vé</a></li>

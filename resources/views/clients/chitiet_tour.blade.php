@@ -162,10 +162,21 @@
                 
                     
                     <hr class="mt-30 mb-40">
-                   <form action="{{ route('review') }}" method="POST" class="mt-30">
-                     <input type="hidden" name="bookingID" value="{{ $bookingID }}">
-                     @csrf
+                    @if(session('error'))
+                        <div style="color:red; margin-bottom:10px;">
+                            {{ session('error') }}
+                        </div>
+                    @endif
 
+                    @if(session('success'))
+                        <div style="color:green; margin-bottom:10px;">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                @if($bookingID)
+                <form action="{{ route('review') }}" method="POST" class="mt-30">
+                    @csrf
+                    <input type="hidden" name="bookingID" value="{{ $bookingID }}">
                     <input type="hidden" name="tourID" value="{{ $chitiet_tour->tourID }}">
                     <input type="hidden" name="sosao" id="sosao">
 
@@ -179,13 +190,23 @@
                         <i class="far fa-star" data-value="5"></i>
                     </div>
 
-                    <textarea name="binhluan" class="form-control mb-3" rows="4"></textarea>
+                    <textarea name="binhluan" class="form-control mb-3"></textarea>
 
                     <button type="submit" class="theme-btn bgc-secondary">
                         Gửi đánh giá
                     </button>
                 </form>
-                
+                @else
+                    <p style="color:red">
+                        Bạn cần đặt và hoàn thành tour này mới được đánh giá!
+                    </p>
+                @endif
+                     
+
+                   
+                   
+
+             
 
             </div>
             <div class="col-lg-4 col-md-8 col-sm-10 rmt-75">

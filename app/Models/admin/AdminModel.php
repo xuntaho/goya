@@ -8,8 +8,8 @@ use Illuminate\Database\Eloquent\Model;
 class AdminModel extends Model
 {
     use HasFactory;
-    protected $table = 'admin';
-    protected $primaryKey = 'adminID';
+    protected $table = 'users';
+    protected $primaryKey = 'userID';
     public $timestamps = false;
 
     // lấy admin

@@ -31,7 +31,7 @@ class BookingModel extends Model
             ->orWhere('tours.title', 'like', '%' . $keyword . '%');
         });
     }
-        return $query->get();
+        return $query->orderBy('created_at', 'desc')->get();
     }
     public function getBookingById($id)
     {

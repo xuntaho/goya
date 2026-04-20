@@ -15,16 +15,14 @@ class DashboardController extends Controller
         $this->dashboard = new DashboardModel();
     }
 
-    public function index()
+   public function index()
     {
-        //dd($this->dashboard->getRevenuePerMonth());
         $title = 'Admin Dashboard';
-        if (!session('admin')) {
-        return redirect()->route('admin.login');
-    }
+        if (session('role') !== 'admin') {
+            return redirect()->route('login')->with('error', 'Bạn không có quyền truy cập!');
+        }
         $summary = $this->dashboard->getSummary();
         $valueTour = $this->dashboard->getValueDomain();
-
         $dataDomain = [
             'values' => [
                 $valueTour['Bac'] ?? 0,
@@ -36,7 +34,7 @@ class DashboardController extends Controller
         $toursBooked = $this->dashboard->getMostTourBooked();
         $newBooking = $this->dashboard->getNewBooking();
         $revenue = $this->dashboard->getRevenuePerMonth();
-
+        
         return view('admin.dashboard', compact(
             'title',
             'summary',

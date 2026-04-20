@@ -139,7 +139,7 @@
                                 </button>
 
                                 <ul class="dropdown-menu-custom" id="userDropdown">
-                                    @if (session()->has('username'))
+                                    @if (session()->has('userID'))
                                         <li><a href="{{ route('home') }}">Xin chào: {{ session('username') }}</a></li>
                                         <li><a href="{{ route('infor') }}">Thông tin cá nhân</a></li>
                                          <li><a href="{{ route('tour_booked') }}">Lich sử đặt tour</a></li>

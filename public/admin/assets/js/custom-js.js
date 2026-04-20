@@ -10,7 +10,6 @@ $(document).ready(function () {
 
     let isSubmitting = false;
 
-    // 2. Ngăn chặn form tự reload hoặc submit ngoài ý muốn
     $(document).on('submit', '#formProfileAdmin', function (e) {
         e.preventDefault();
         return false;
@@ -97,10 +96,12 @@ $(document).ready(function () {
 
     // 5. Global Ajax Error (Lọc bỏ các thông báo rác)
     $(document).ajaxError(function (event, xhr) {
-        if (xhr.status === 405) return; // Bỏ qua lỗi Method Not Allowed linh tinh
-        if (xhr.responseURL && xhr.responseURL.includes('/admin/login')) {
-            window.location.href = "/admin/login";
-        }
+    if (xhr.status === 405) return;
+
+    if (xhr.status === 401 || xhr.status === 419) {
+        // session hết hạn
+        window.location.href = "/login"; 
+    }
     });
 
 
@@ -240,7 +241,7 @@ $(document).on('click', '.btn-cancel', function (e) {
     }
 
     $.ajax({
-        url: "{{ route('admin.booking.cancel') }}",
+       url: "/admin/booking/cancel",
         type: "POST",
         data: {
             bookingId: id,

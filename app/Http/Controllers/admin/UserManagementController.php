@@ -60,7 +60,7 @@ class UserManagementController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Có lỗi xảy ra khi kích hoạt người dùng!'
-            ], 500); // Trả về mã lỗi HTTP 500 nếu có lỗi
+            ], 500); 
         }
     }
 

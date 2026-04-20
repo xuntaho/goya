@@ -12,10 +12,10 @@
                     <p>Website <span class="count-text plus" data-speed="3000" data-stop="34500">0</span> với những trải
                         nghiệm được yêu thích nhất</p>
                     <ul class="destinations-nav mt-30">
-                        <li data-filter="*" class="active">Tất cả</li>
-                        <li data-filter=".features">Miền Bắc</li>
-                        <li data-filter=".recent">Miền Trung</li>
-                        <li data-filter=".city">Miền Nam</li>
+                        <li data-filter="*">Tất cả</li>
+                        <li data-filter=".domain-Bac">Miền Bắc</li>
+                        <li data-filter=".domain-Trung">Miền Trung</li>
+                        <li data-filter=".domain-Nam">Miền Nam</li>
 
                     </ul>
                 </div>

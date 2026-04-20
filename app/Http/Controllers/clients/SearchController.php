@@ -19,13 +19,11 @@ class SearchController extends Controller
                 DB::raw('AVG(danhgia.sosao) as avg_rating'),
                 DB::raw('COUNT(danhgia.id) as total_review')
             );
-
-        
         if ($request->keyword) {
             $query->where('title', 'like', '%' . $request->keyword . '%');
         }
         if ($request->mien) {
-            $query->where('tours.mien', $request->mien);
+        $query->where('tours.mien', 'like', '%' . trim($request->mien) . '%');
         }
         if ($request->start_date && $request->end_date) {
         $start = Carbon::createFromFormat('d-m-Y', $request->start_date)->format('Y-m-d');

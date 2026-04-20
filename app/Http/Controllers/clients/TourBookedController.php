@@ -10,14 +10,13 @@ class TourBookedController extends Controller
 {
     public function index()
     {
-        $title = 'tour da dat';
-        $userID = session('login_user_id');
+        $title = 'Tour đã đặt';
+        $userID = session('userID');
 
         
         if (!$userID) {
             return redirect('/login')->with('error', 'Vui lòng đăng nhập');
         }
-
         $bookings = DB::table('booking')
             ->join('tours', 'booking.tourID', '=', 'tours.tourID')
             ->leftJoin('thanhtoan', 'booking.bookingID', '=', 'thanhtoan.bookingID')
@@ -51,6 +50,28 @@ class TourBookedController extends Controller
             ->orderBy('booking.bookingID', 'desc')
             ->get();
         return view('clients.tour_booked', compact('title','bookings'));
+    }
+    public function cancelBooking($id)
+    {
+        $userID = session('userID');
+
+        if (!$userID) {
+            return redirect('/login');
+        }
+        $booking = DB::table('booking')
+            ->where('bookingID', $id)
+            ->where('userID', $userID)
+            ->first();
+
+        if ($booking) {
+            DB::table('booking')
+                ->where('bookingID', $id)
+                ->update(['status' => 'cancelled']);
+
+            return redirect()->back()->with('message', 'Hủy tour thành công!');
+        }
+
+        return redirect()->back()->with('error', 'Không tìm thấy đơn hàng hoặc bạn không có quyền hủy!');
     }
 
 }

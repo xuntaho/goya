@@ -41,6 +41,7 @@ $(document).ready(function () {
     // --- LOGIN FORM ---
     $("#login-form-client").on("submit", function (e) {
         e.preventDefault();
+        e.stopPropagation();
         
 
         var userName = $("#username-login").val().trim();
@@ -74,34 +75,35 @@ $(document).ready(function () {
     };
     console.log(formData);
 
-    $.ajax({
-        url: $(this).attr('action'),
-        method: "POST",
-        data: formData,
-        success: function(response) {
-            if(response.success) {
-                $('#message').text(response.message).show();
-                $('#error').hide();
-                setTimeout(function(){
-                    const params = new URLSearchParams(window.location.search);
-                    const redirect = params.get("redirect");
-                    const tourID = params.get("tourID");
+   $.ajax({
+    url: $(this).attr('action'),
+    method: "POST",
+    data: formData,
 
-                    if (redirect === "checkout" && tourID) {
-                        window.location.href = "/checkout/" + tourID;
-                    } else {
-                        window.location.href = "/";
-                    }
-                }, 1000);
-            } else {
-                $('#message').hide();
-                $('#error').text(response.message).show();
-            }
-        },
-        error: function() {
-            $('#error_login').text("Tài khoản hoặc mật khẩu không chính xác!").show();
+    success: function(response) {
+        console.log("SUCCESS:", response);
+
+        if(response.success === true) {
+            $('#error').hide();
+
+           $('#message').text('Đăng nhập thành công').show();
+
+            // 🔥 redirect
+            setTimeout(function(){
+                window.location.href = response.redirect;
+            }, 500);
+        } else {
+            $('#error').text(response.message).show();
+            $('#message').hide();
         }
-    });
+    },
+
+    error: function(xhr) {  // 🔥 ĐẶT Ở ĐÂY
+        console.log("ERROR:", xhr.status, xhr.responseText);
+
+        $('#error').text("Lỗi: " + xhr.status).show();
+    }
+});
 }
     });
 
@@ -254,7 +256,7 @@ $(document).ready(function () {
             'diachi': diachi,
             'email': email,
             'sdt': sdt,
-            'token': $('input[name="_token"]').val(),
+            '_token': $('input[name="_token"]').val(),
         };
         console.log(dataUpdate);
         $.ajax({
@@ -262,7 +264,7 @@ $(document).ready(function () {
             url: $(this).attr("action"),
             data: dataUpdate,
             success: function (response) {
-                toastr.success(response.message);
+              
                 console.log(response.message);
 
                 if (response.success) {
@@ -331,7 +333,7 @@ $(document).ready(function () {
                         // 1. Thay đổi ảnh trên giao diện ngay lập tức
                         $('#avatar-preview').attr('src', response.image_url);
                         // 2. Hiện thông báo thành công
-                        toast.success(response.message);
+                        toastr.success(response.message);
                     } else {
                         toastr.error(response.message);
                     }

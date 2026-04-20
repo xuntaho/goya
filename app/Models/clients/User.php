@@ -19,6 +19,11 @@ class User extends Model
         ->where('userID', $id)->first();
         
     }
+    public function getUserByUsername($username){
+        return DB::table($this->table)
+            ->where('username', $username)
+            ->first();
+    }   
     public function updateUser ($id, $data) {
         $update = DB::table($this->table)
             ->where('userID', $id)

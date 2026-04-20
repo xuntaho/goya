@@ -27,14 +27,14 @@
                 <div class="form-group">
                     <label for="tel">Số điện thoại*</label>
                     <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại liên hệ"
-                        value="{{ $user->phone ?? '' }}" required>
+                        value="{{ $user->sdt ?? '' }}" required>
                    
                 </div>
 
                 <div class="form-group">
                     <label for="address">Địa chỉ*</label>
                     <input type="text" id="address" name="address" placeholder="Nhập địa chỉ liên hệ" 
-                         value="{{ $user->address ?? '' }}" required>
+                         value="{{ $user->diachi ?? '' }}" required>
                     
                 </div>
             </div>

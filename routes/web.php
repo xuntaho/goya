@@ -81,14 +81,11 @@ Route::get('/tour_booked', [TourBookedController::class, 'index'])
 Route::post('/review', [ChiTietToursController::class, 'store'])
     ->name('review');
 
-
+//huy tour
+Route::get('/booking/cancel/{id}', [TourBookedController::class, 'cancelBooking'])->name('booking.cancel');
 
 //ADMIN
 Route::prefix('admin')->group(function () {
-
-    Route::get('/login', [LoginAdminController::class, 'index'])->name('admin.login');
-    Route::post('/login-account', [LoginAdminController::class, 'loginAdmin'])->name('admin.login-account');
-    Route::get('/logout', [LoginAdminController::class, 'logout'])->name('admin.logout');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
 
@@ -133,16 +130,15 @@ Route::prefix('admin')->group(function () {
         ->name('booking');
     Route::post('/booking/confirm', [BookingManagementController::class, 'confirmBooking']);
     Route::post('/booking/cancel', [BookingManagementController::class, 'cancelBooking'])
-    ->name('admin.booking.cancel');
+    ->name('booking.cancel');
     Route::post('/booking/delete/{id}', [BookingManagementController::class, 'deleteBooking']);
     
     Route::get('/booking/detail/{id}', [BookingManagementController::class, 'showDetail'])
     ->name('booking.detail');
-    
+    Route::get('/users', [UserManagementController::class, 'index'])->name('users');
+
+    Route::post('/user/active', [UserManagementController::class, 'activeUser'])->name('active-user');
+
+    Route::post('/user/status', [UserManagementController::class, 'changeStatus'])->name('status-user');
 
 });
-Route::get('/admin/users', [UserManagementController::class, 'index'])->name('admin.users');
-
-Route::post('/admin/user/active', [UserManagementController::class, 'activeUser'])->name('admin.active-user');
-
-Route::post('/admin/user/status', [UserManagementController::class, 'changeStatus'])->name('admin.status-user');

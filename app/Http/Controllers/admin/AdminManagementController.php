@@ -5,6 +5,7 @@ namespace App\Http\Controllers\admin;
 use App\Http\Controllers\Controller;
 use App\Models\admin\AdminModel;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash; // Thêm dòng này để dùng mã hóa
 
 class AdminManagementController extends Controller
 {
@@ -15,38 +16,32 @@ class AdminManagementController extends Controller
         $this->admin = new AdminModel();
     }
 
-        public function index()
+    public function index()
     {
-        if (!session()->has('admin')) {
-            return redirect()->route('admin.login');
-        }
-
-        $title = 'Quản lý Admin';
-
-        $username = session('admin');
-
-        $admin = $this->admin->getAdminByUsername($username);
-
-        if (!$admin) {
-            session()->forget('admin');
-            return redirect()->route('admin.login');
-        }
-
-        return view('admin.profile-admin', compact('title', 'admin'));
+    $title = 'Thông tin admin';
+    if (!session()->has('userID') || session('role') != 'admin') {
+        return redirect()->route('login');
     }
 
-   
+    $username = session('username');
+    $admin = $this->admin->getAdminByUsername($username);
+
+    $admin = $this->admin->getAdminByUsername($username);
+    if (!$admin) {
+        session()->forget('username');
+        return redirect()->route('login');
+        }
+        return view('admin.profile-admin', compact('title', 'admin'));
+    }
     public function updateAdmin(Request $request)
     {
-        if (!session()->has('admin')) {
+        if (!session()->has('userID') || session('role') != 'admin') {
             return response()->json([
                 'error' => true,
-                'message' => 'Phiên đăng nhập hết hạn'
+                'message' => 'Không có quyền'
             ]);
         }
-
-        $usernameSession = session('admin');
-
+        $usernameSession = session('username');
         $admin = $this->admin->getAdminByUsername($usernameSession);
 
         if (!$admin) {
@@ -55,15 +50,13 @@ class AdminManagementController extends Controller
                 'message' => 'Admin không tồn tại'
             ]);
         }
-
         $password = $request->password;
 
         if (!empty($password)) {
-            $password = md5($password);
+            $password = bcrypt($password);
         } else {
             $password = $admin->password;
         }
-
         $dataUpdate = [
             'username' => $request->username,
             'password' => $password,
@@ -72,7 +65,7 @@ class AdminManagementController extends Controller
         ];
 
         $this->admin->updateAdminByUsername($usernameSession, $dataUpdate);
-        session(['admin' => $request->username]);
+        session(['username' => $request->username]);
 
         return response()->json([
             'success' => true
@@ -80,32 +73,29 @@ class AdminManagementController extends Controller
     } 
     public function updateAvatar(Request $req)
     {
-        if (!session()->has('admin')) {
-            return response()->json(['error' => true, 'message' => 'Hết hạn']);
-        }
+        if (!session()->has('userID') || session('role') != 'admin') {
+        return response()->json([
+            'error' => true,
+            'message' => 'Không có quyền'
+        ]);
+    }
 
         if ($req->hasFile('avatarAdmin')) {
             $avatar = $req->file('avatarAdmin');
-            $username = session('admin');
+            $username = session('username');
 
-            // 1. Tạo tên file duy nhất
             $filename = time() . '_' . $avatar->getClientOriginalName();
-
-            // 2. Di chuyển vào thư mục public
             $avatar->move(public_path('admin/assets/images/user-profile'), $filename);
 
-            // 3. Cập nhật vào DB
             $this->admin->updateAdminByUsername($username, [
                 'hinh' => $filename
             ]);
-
             return response()->json([
                 'success' => true,
                 'message' => 'Cập nhật ảnh thành công!',
-                'new_url' => asset('admin/assets/images/user-profile/' . $filename) // Trả về URL mới
+                'new_url' => asset('admin/assets/images/user-profile/' . $filename)
             ]);
         }
-
         return response()->json(['error' => true, 'message' => 'Không tìm thấy file']);
     }
 }

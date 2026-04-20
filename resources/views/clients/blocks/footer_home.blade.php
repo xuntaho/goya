@@ -58,7 +58,7 @@
                                     <li><a href="{{ route('about') }}">Về chúng tôi</a></li>
                                     <li><a href="{{ route('blog') }}">Blog cộng đồng</a></li>
                                     <li><a href="{{ route('contact') }}">Cơ hội và việc làm</a></li>
-                                    <li><a href="{{ route('blog') }}">Blog mới nahats</a></li>
+                                    <li><a href="{{ route('blog') }}">Blog mới nhất</a></li>
                                     <li><a href="{{ route('contact') }}">Liên hệ</a></li>
                                 </ul>
                             </div>

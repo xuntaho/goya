@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\clients;
 
 use App\Http\Controllers\Controller;
+use App\Models\clients\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 class CheckoutController extends Controller
 {
-
-
+    private $user;
     public function index($id)
     {   
         $title = 'Đặt tour';
@@ -20,18 +20,17 @@ class CheckoutController extends Controller
         ->first();
 
         $user = null;
-        $userID = session('login_user_id');
+        $userID = session('userID');
 
         if ($userID) {
-            $user = DB::table('users')
-                ->where('userID', $userID)
-                ->first();
+           $this->user = new User();
+            $user = $this->user->getUser($userID);
         }
         return view('clients.checkout', compact('tour', 'title', 'coupon', 'user'));
     }
     public function store(Request $request)
     {
-        $userID = session('login_user_id');
+        $userID = session('userID');
         if (!$userID) {
             return redirect('/login?redirect=checkout&tourID=' . $request->tourID);
         }
@@ -203,15 +202,34 @@ class CheckoutController extends Controller
 
     public function bankPage($id)
     {
-        $booking = DB::table('booking')->where('bookingID', $id)->first();
+        $data = DB::table('booking')
+            ->join('hoadon', 'booking.bookingID', '=', 'hoadon.bookingID')
+            ->join('thanhtoan', 'booking.bookingID', '=', 'thanhtoan.bookingID')
+            ->where('booking.bookingID', $id)
+            ->select(
+                'booking.*',
+                'hoadon.tongtien',
+                'hoadon.trangthai as hoadon_status',
+                'thanhtoan.pthucTT',
+                'thanhtoan.trangthai as payment_status'
+            )
+            ->first();
 
-        return view('clients.bank', compact('booking'));
+        if (!$data) {
+            abort(404);
+        }
+
+        return view('clients.bank', compact('data'));
     }
-    public function momoPage($id)
+   public function momoPage($id)
     {
-        $booking = DB::table('booking')->where('bookingID', $id)->first();
+        $data = DB::table('booking')
+            ->join('hoadon', 'booking.bookingID', '=', 'hoadon.bookingID')
+            ->join('thanhtoan', 'booking.bookingID', '=', 'thanhtoan.bookingID')
+            ->where('booking.bookingID', $id)
+            ->first();
 
-        return view('clients.momo', compact('booking'));
+        return view('clients.momo', compact('data'));
     }
 
 }

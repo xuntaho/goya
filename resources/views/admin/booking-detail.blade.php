@@ -9,7 +9,7 @@
         <div class="">
             <div class="page-title">
                 <div class="title_left">
-                    <h3>Hóa đơn <small>đặt tour</small></h3>
+                    <h3>Hóa đơn đặt tour</h3>
                 </div>
             </div>
 

@@ -1,4 +1,5 @@
-<div class="col-md-3 left_col">
+@if(session('role') == 'admin')
+    <div class="col-md-3 left_col">
     <div class="left_col scroll-view">
         <div class="navbar nav_title" style="border: 0;">
             <a href="{{ route('admin.dashboard') }}" class="site_title"><i class="fa fa-paw"></i> <span>Admin</span></a>
@@ -9,12 +10,11 @@
         <!-- menu profile quick info -->
         <div class="profile clearfix">
             <div class="profile_pic">
-                <img src="{{ asset('admin/assets/images/user-profile/avt_admin.jpg') }}" alt="..."
-                    class="img-circle profile_img">
-            </div>
+                <img src="{{ asset('admin/assets/images/user-profile/' . (session('avatar') ?? 'unnamed.png')) }}" class="img-circle profile_img">
+            </div>  
             <div class="profile_info">
                 <span>Xin chào,</span>
-                <h2>{{ session('login_user')->fullname ?? 'Admin' }}</h2>
+                <h2>{{ session('username') ?? 'Admin' }}</h2>
             </div>
         </div>
         <!-- /menu profile quick info -->
@@ -53,7 +53,7 @@
             <a data-toggle="tooltip" data-placement="top" title="Lock">
                 <span class="glyphicon glyphicon-eye-close" aria-hidden="true"></span>
             </a>
-            <a data-toggle="tooltip" data-placement="top" title="Logout" href="{{ route('admin.logout') }}">
+            <a data-toggle="tooltip" data-placement="top" title="Logout" href="{{ route('logout') }}">
                 <span class="glyphicon glyphicon-off" aria-hidden="true"></span>
             </a>
         </div>
@@ -72,17 +72,17 @@
                 <li class="nav-item dropdown open" style="padding-left: 15px;">
                     <a href="javascript:;" class="user-profile dropdown-toggle" aria-haspopup="true" id="navbarDropdown"
                         data-toggle="dropdown" aria-expanded="false">
-                        <img src="{{ asset('admin/assets/images/user-profile/avt_admin.jpg') }}" alt="">
-                        @if (session()->has('admin'))
-                            {{ is_string(session('admin')) ? session('admin') : '' }}
+                        <img src="{{ asset('admin/assets/images/user-profile/' . (session('avatar') ?? 'unnamed.png')) }}" alt="">
+                        @if(session('role') == 'admin')
+                            {{ session('username') }}
                         @endif
                     </a>
                     <div class="dropdown-menu dropdown-usermenu pull-right" aria-labelledby="navbarDropdown">
                         <a class="dropdown-item" href="{{ route('admin.profile') }}">
                             Thông tin cá nhân
                         </a>
-                        <a class="dropdown-item" href="{{ route('admin.logout') }}"><i
-                                class="fa fa-sign-out pull-right"></i> Đăng xuất</a>
+                        <a class="dropdown-item" href="{{ route('logout') }}"><i class="fa fa-sign-out pull-right"></i>
+                            Đăng xuất</a>
                     </div>
                 </li>
 
@@ -103,7 +103,7 @@
                                         <span class="time">{{ $item->phoneNumber ?? '' }}</span>
                                     </span>
                                     <span class="message text-contact-truncate">
-                                        {{ is_string($item->message) ? $item->message : '' }}
+                                       {{ session('username') }}
                                     </span>
                                 </a>
                             </li>
@@ -115,3 +115,4 @@
     </div>
 </div>
 <!-- /top navigation -->
+@endif

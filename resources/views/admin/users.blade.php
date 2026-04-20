@@ -16,11 +16,11 @@
 
                             <form method="GET" action="">
                                 <div class="input-group">
-                                    <input type="text" name="keyword" class="form-control" placeholder="Tìm user..."
-                                        value="{{ request('keyword') }}">
+                                    <input type="text" name="keyword" class="form-control"
+                                        placeholder="Nhập thông tin user..." value="{{ request('keyword') }}">
 
                                     <span class="input-group-btn">
-                                        <button class="btn btn-default" type="submit">Go!</button>
+                                        <button class="btn btn-default" type="submit">Tìm kiếm</button>
                                     </span>
                                 </div>
                             </form>
@@ -39,7 +39,15 @@
                                     <div class="col-sm-12">
                                         <h4 class="brief"><i>{{ $user->isActive }}</i></h4>
                                         <div class="left col-md-7 col-sm-7">
-                                            <h2>{{ $user->fullname }}</h2>
+                                            <h2>
+                                                {{ $user->fullname }}
+
+                                                @if($user->role == 'admin')
+                                                    <span style="color:red;">[ADMIN]</span>
+                                                @else
+                                                    <span style="color:blue;">[USER]</span>
+                                                @endif
+                                            </h2>
                                             <p><strong>Name: </strong> {{ $user->username }} </p>
                                             <ul class="list-unstyled">
                                                 <li><i class="fa fa-building"></i> Address: {{ $user->diachi }}</li>
@@ -60,28 +68,32 @@
                                                     <i class="fa fa-check"> </i> Kích hoạt
                                                 </button>
                                             @endif
-                                            @if($user->trangthai == 'banned')
-                                                <button class="btn btn-success btn-unban"
-                                                    data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": ""}'>
-                                                    Bỏ chặn
-                                                </button>
-                                            @else
-                                                <button class="btn btn-warning btn-ban"
-                                                    data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": "b"}'>
-                                                    Chặn
-                                                </button>
-                                            @endif
+                                            @if($user->role != 'admin')
+                                                @if($user->trangthai == 'banned')
+                                                    <button class="btn btn-success btn-unban"
+                                                        data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": ""}'>
+                                                        Bỏ chặn
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-warning btn-ban"
+                                                        data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": "b"}'>
+                                                        Chặn
+                                                    </button>
+                                                @endif
+                                             @endif
 
-                                            @if($user->trangthai == 'deleted')
-                                                <button class="btn btn-info btn-restore"
-                                                    data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": ""}'>
-                                                    Khôi phục
-                                                </button>
-                                            @else
-                                                <button class="btn btn-danger btn-delete"
-                                                    data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": "d"}'>
-                                                    Xóa
-                                                </button>
+                                            @if($user->role != 'admin')
+                                                @if($user->trangthai == 'deleted')
+                                                    <button class="btn btn-info btn-restore"
+                                                        data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": ""}'>
+                                                        Khôi phục
+                                                    </button>
+                                                @else
+                                                    <button class="btn btn-danger btn-delete"
+                                                        data-attr='{"userId": "{{ $user->userID }}", "action": "{{ route('admin.status-user') }}", "status": "d"}'>
+                                                        Xóa
+                                                    </button>
+                                                @endif
                                             @endif
 
                                         </div>

@@ -3,36 +3,25 @@
 namespace App\Http\Controllers\clients;
 
 use App\Http\Controllers\Controller;
-use App\Models\clients\Login;
+use App\Models\clients\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
-use Illuminate\Support\Facades\DB;
-
-
 class LoginController extends Controller
 {
-    private $login;
-    
-
-
-    public function __construct()
-    {
-        $this->login = new Login();
-       
-    }
-
-    // Trang login
+    private $user;
     public function index()
     {
+        
         $title = 'Đăng nhập';
         return view('clients.login', compact('title'));
     }
     public function showRegister()
     {
         $title = 'Đăng ký';
-        return view('clients.dangky', compact('title')); 
+        return view('clients.dangky', compact('title'));
     }
     public function dangky(Request $request)
     {
@@ -40,13 +29,18 @@ class LoginController extends Controller
         $email = $request->email;
         $password = $request->password;
 
-        // kiểm tra tồn tại
-        if ($this->login->checkUser($username, $email)) {
+        // check tồn tại
+        $exist = DB::table('users')
+            ->where('username', $username)
+            ->orWhere('email', $email)
+            ->first();
+
+        if ($exist) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tên hoặc email đã tồn tại'
             ]);
-        } 
+        }
 
         try {
             $token = Str::random(60);
@@ -56,20 +50,21 @@ class LoginController extends Controller
                 'email' => $email,
                 'password' => bcrypt($password),
                 'token' => $token,
-                'isActive' => 0
+                'isActive' => 0,
+                'role' => 'user'
             ]);
 
             $this->sendEmail($email, $token);
 
             return response()->json([
                 'success' => true,
-                'message' => 'Đăng ký thành công! Kiểm tra email để kích hoạt tài khoản'
+                'message' => 'Đăng ký thành công! Kiểm tra email để kích hoạt'
             ]);
 
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => 'Lỗi server: ' . $e->getMessage()
+                'message' => 'Lỗi server'
             ]);
         }
     }
@@ -96,51 +91,55 @@ class LoginController extends Controller
                     'isActive' => 1
                 ]);
 
-            return redirect('/login')->with('message', 'Tài khoản đã kích hoạt');
-        } else {
-            return redirect('/login')->with('error', 'Token không hợp lệ!');
+            return redirect('/login')->with('message', 'Đã kích hoạt tài khoản!');
         }
-    }
 
+        return redirect('/login')->with('error', 'Token không hợp lệ!');
+    }
     public function login(Request $request)
     {
-        $username = $request->username;
-        $password = $request->password;
+        $username = trim($request->username);
+        $password = trim($request->password);
 
-        $user = $this->login->login($username);
+        $this->user = new User();
+        $user = $this->user->getUserByUsername($username);
 
-        if ($user && Hash::check($password, $user->password)) {
-
-            if ($user->isActive == 0) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Tài khoản chưa kích hoạt!'
-                ]);
-            }
-
-        
-            $request->session()->put('login_user_id', $user->userID);
-
-            // giữ nguyên của bạn
-            $request->session()->put('username', $username);
-            $request->session()->put('hinh', $user->hinh);
-
+        if (!$user) {
             return response()->json([
-                'success' => true,
-                'message' => 'Đăng nhập thành công!'
+                'success' => false,
+                'message' => 'Tài khoản không tồn tại!'
             ]);
         }
 
+        if (!Hash::check($password, $user->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tài khoản hoặc mật khẩu không đúng!'
+            ]);
+        }
+
+        if ($user->isActive == 0) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tài khoản chưa kích hoạt!'
+            ]);
+        }
+        $request->session()->put('userID', $user->userID);
+        $request->session()->put('username', $user->username); 
+        $request->session()->put('role', $user->role);
+        $request->session()->put('avatar', $user->hinh ?? 'unnamed.png');
+
+
         return response()->json([
-            'success' => false,
-            'message' => 'Tài khoản hoặc mật khẩu không đúng!'
+            'success' => true,
+            'redirect' => ($user->role == 'admin')
+                ? route('admin.dashboard')
+                : route('home')
         ]);
     }
-    public function logout (Request $request){
-        $request->session()->forget('username');
-        $request->session()->forget('hinh');
-        $request->session()->forget('login_user_id');
-        return redirect()->route('home');
-
+    public function logout(Request $request)
+    {
+        $request->session()->flush();
+        return redirect('/');
     }
 }

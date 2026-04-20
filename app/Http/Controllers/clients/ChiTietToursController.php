@@ -21,7 +21,13 @@ class ChiTietToursController extends Controller
     {
         $title = 'Chi tiết tour';
     $chitiet_tour = $this->tour->getchitiet_tour($id);
-    $bookingID = request()->query('bookingID');
+    $bookingID = DB::table('booking')
+    ->join('tours', 'booking.tourID', '=', 'tours.tourID')
+    ->where('booking.userID', session('userID'))
+    ->where('booking.tourID', $id)
+    ->where('booking.status', 'confirmed')
+    ->where('tours.ngayketthuc', '<', now())
+    ->value('booking.bookingID');
     $getReviews = DB::table('danhgia')
         ->join('users', 'danhgia.userID', '=', 'users.userID')
         ->where('danhgia.tourID', $id)
@@ -39,9 +45,30 @@ class ChiTietToursController extends Controller
    
     public function store(Request $request)
     {
-    $userID = session('login_user_id');
+    //dd($request->bookingID);
+    $userID = session('userID'); 
     if (!$userID) {
         return redirect('/login')->with('error', 'Vui lòng đăng nhập');
+    }
+    $hasBooked = DB::table('booking') 
+    ->join('tours', 'booking.tourID', '=', 'tours.tourID')
+    ->where('booking.bookingID', $request->bookingID) 
+    ->where('booking.userID', $userID)
+    ->where('booking.status', 'confirmed')
+    ->where('tours.ngayketthuc', '<', now())
+    ->exists();
+
+    if (!$hasBooked) {
+    return back()->with('error', 'Bạn phải hoàn thành chuyến đi mới được đánh giá!');
+    }
+
+    $alreadyReviewed = DB::table('danhgia')
+        ->where('bookingID', $request->bookingID)
+        ->where('userID', $userID)
+        ->exists();
+
+    if ($alreadyReviewed) {
+        return back()->with('error', 'Bạn đã đánh giá cho lần đặt tour này rồi!');
     }
     DB::table('danhgia')->insert([
         'tourID' => $request->tourID,
