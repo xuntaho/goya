@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Support\Str;
-use Pdo;
 
 return [
 
@@ -64,7 +63,7 @@ return [
                     '/etc/ssl/certs/ca-certificates.crt',
                     '/etc/pki/tls/certs/ca-bundle.crt',
                     '/etc/ssl/ca-bundle.pem',
-                ])->first('is_file')),
+                ])->first(fn($path) => is_file($path))),
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_VERIFY', true),
             ]) : [],
         ],
@@ -89,7 +88,7 @@ return [
                     '/etc/ssl/certs/ca-certificates.crt',
                     '/etc/pki/tls/certs/ca-bundle.crt',
                     '/etc/ssl/ca-bundle.pem',
-                ])->first('is_file')),
+                ])->first(fn($path) => is_file($path))),
                 PDO::MYSQL_ATTR_SSL_VERIFY_SERVER_CERT => env('DB_SSL_VERIFY', true),
             ]) : [],
         ],
