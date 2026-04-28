@@ -11,9 +11,12 @@ class Home extends Model
 
     public function getHomeTours()
     {
-        $tours = DB::table('tours')
-        ->whereIn('tourID', [1, 3, 7, 4])
+        return DB::table('tours')
+        ->where('ngayketthuc', '>=', now())
+        ->orderBy('tourID', 'desc')
+        ->limit(4)
         ->get();
+        
 
         // foreach ($tours as $tour) {
         //     $tour->hinh = DB::table('image')
