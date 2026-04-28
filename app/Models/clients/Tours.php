@@ -8,8 +8,6 @@ use Illuminate\Database\Eloquent\Model;
 class Tours extends Model
 {
     protected $table = 'tours';
-
-    //lay tat ca tour
     public function getAllTours()
     {
        return DB::table('tours')->where('tours.ngayketthuc', '>=', now())
@@ -24,26 +22,21 @@ class Tours extends Model
     }
     public function getchitiet_tour($id)
     {
-        // Tìm tour dựa trên cột 'tourID' của bảng tours
-        $getchitiet_tour = DB::table($this->table)
+           $getchitiet_tour = DB::table($this->table)
             ->where('tourID', $id) 
             ->first();
-
         if ($getchitiet_tour) {
             //Lấy toàn bộ ảnh từ bảng 'image' có 'tourID' khớp với tour vừa tìm thấy
             $getchitiet_tour->images = DB::table('image')
                 ->where('tourID', $getchitiet_tour->tourID) 
                 ->pluck('imgurl')
                 ->toArray();
-
-            // Lấy timeline
             $getchitiet_tour->timeline = DB::table('timeline')
                 ->where('tourID', $getchitiet_tour->tourID)
                 ->get();
                 
         }
-    
-        return $getchitiet_tour;
+            return $getchitiet_tour;
     }
     function getDomain() {
         return DB::table($this->table)
