@@ -11,11 +11,30 @@ class Home extends Model
 
     public function getHomeTours()
     {
-        return DB::table('tours')
+        $mienBac = DB::table('tours')
+        ->where('mien', 'Bac')
         ->where('ngayketthuc', '>=', now())
         ->orderBy('tourID', 'desc')
-        ->limit(4)
+        ->limit(2)
         ->get();
+
+    $mienTrung = DB::table('tours')
+        ->where('mien', 'Trung')
+        ->where('ngayketthuc', '>=', now())
+        ->orderBy('tourID', 'desc')
+        ->limit(1)
+        ->get();
+
+    $mienNam = DB::table('tours')
+        ->where('mien', 'Nam')
+        ->where('ngayketthuc', '>=', now())
+        ->orderBy('tourID', 'desc')
+        ->limit(1)
+        ->get();
+
+    return $mienBac
+        ->merge($mienTrung)
+        ->merge($mienNam);
         
 
         // foreach ($tours as $tour) {
