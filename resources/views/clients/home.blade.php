@@ -25,7 +25,15 @@
                             <div class="content">
                                 <span class="location"><i class="fal fa-map-marker-alt"></i> {{ $tour->diemden }}</span>
                                 <h5><a href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}">{{ $tour->title }}</a></h5>
-                                <span class="time">{{ $tour->thoigian }}</span>
+                                @php
+                                    $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                                    $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+
+                                    $days = $start->diffInDays($end) + 1;
+                                    $nights = $days - 1;
+                                @endphp
+
+                                <span class="time">{{ $days }}N{{ $nights }}Đ</span>
                             </div>
                             <div class="destination-footer">
                                 <span class="price"><span>{{ number_format($tour->gia_nguoiLon, 0, ',', '.') }}</span> VND/ người</span> 
