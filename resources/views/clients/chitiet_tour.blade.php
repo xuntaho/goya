@@ -228,7 +228,15 @@
                             <hr>
                             <div class="time py-5">
                                 <b>Thời gian :</b>
-                                <p >{{ $chitiet_tour->thoigian }}</p>
+                               @php
+                                    $start = \Carbon\Carbon::parse($chitiet_tour->ngaybatdau);
+                                    $end = \Carbon\Carbon::parse($chitiet_tour->ngayketthuc);
+
+                                    $days = $start->diffInDays($end) + 1;
+                                    $nights = $days - 1;
+                                @endphp
+
+                                <p>{{ $days }}N{{ $nights }}Đ</p>
                                 <input type="hidden" name="time">
                             </div>
                             <hr class="mb-25">

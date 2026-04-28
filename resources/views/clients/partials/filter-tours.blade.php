@@ -20,7 +20,15 @@
                                             </div>
                                             <h6><a href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}">{{ $tour->title }}</a></h6>
                                             <ul class="blog-meta">
-                                                <li><i class="far fa-clock"></i> {{ $tour->thoigian }}</li>
+                                            @php
+                                                $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                                                $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+
+                                                $days = $start->diffInDays($end) + 1;
+                                                $nights = $days - 1;
+                                            @endphp
+
+                                            <li><i class="far fa-clock"></i> {{ $days }}N{{ $nights }}Đ</li>
                                                 <li><i class="far fa-user"></i> {{ $tour->socho }}</li>
                                             </ul>
                                             <div class="destination-footer">

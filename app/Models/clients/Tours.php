@@ -12,7 +12,7 @@ class Tours extends Model
     //lay tat ca tour
     public function getAllTours()
     {
-        return DB::table('tours')
+       return DB::table('tours')->where('tours.ngayketthuc', '>=', now())
             ->leftJoin('danhgia', 'tours.tourID', '=', 'danhgia.tourID')
             ->select(
                 'tours.*',
@@ -53,7 +53,7 @@ class Tours extends Model
         ->get();
     }
     public function getTours($filters = [], $sorting = null) {
-    $query = DB::table($this->table);
+    $query = DB::table($this->table)->where('ngayketthuc', '>=', now());
     
     if (!empty($filters)) {
         $query->where($filters);

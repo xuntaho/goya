@@ -10,12 +10,8 @@ class ToursModel extends Model
     protected $table = 'tours';
     public function getAllTours($keyword = null, $mien = null, $price = null)
     {
-        $query = DB::table('tours');
-
-        // 🔍 SEARCH
+        $query = DB::table('tours')->where('ngayketthuc', '>=', now());
         if (!empty($keyword)) {
-
-            // 👉 nếu là số → tìm theo ID
             if (is_numeric($keyword)) {
                 $query->where('tourID', $keyword);
             } else {
@@ -26,13 +22,9 @@ class ToursModel extends Model
                 });
             }
         }
-
-        // 🌍 MIỀN
         if (!empty($mien)) {
             $query->where('mien', $mien);
         }
-
-        // 💰 GIÁ
         if (!empty($price)) {
             if ($price == '1') {
                 $query->where('gia_nguoiLon', '<', 2000000);
@@ -42,7 +34,6 @@ class ToursModel extends Model
                 $query->where('gia_nguoiLon', '>', 5000000);
             }
         }
-
         return $query->get();
     }
     public function createTours($data)
@@ -66,7 +57,6 @@ class ToursModel extends Model
         if (is_array($data) && isset($data[0]) && is_array($data[0])) {
             return DB::table('image')->insert($data);
         }
-
         return DB::table('image')->insert([$data]);
     }
     public function uploadImages($data)
@@ -112,8 +102,6 @@ class ToursModel extends Model
             ->where('tourID', $tourId)
             ->delete();
     }
-
-    // ================= DELETE =================
     public function deleteTour($tourId)
     {
         return DB::transaction(function () use ($tourId) {

@@ -86,7 +86,15 @@
 
             <td>{{ $tour->mien }}</td>
 
-            <td>{{ $tour->thoigian }}</td>
+            @php
+                $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+
+                $days = $start->diffInDays($end) + 1;
+                $nights = $days - 1;
+            @endphp
+
+            <td>{{ $days }}N{{ $nights }}Đ</td>
 
             <td>
                 {{ $tour->ngaybatdau ? date('d-m-Y', strtotime($tour->ngaybatdau)) : '' }}
@@ -95,13 +103,20 @@
             <td>
                 {{ $tour->ngayketthuc ? date('d-m-Y', strtotime($tour->ngayketthuc)) : '' }}
             </td>
-            <td>
-                @if($tour->tinhkhadung)
-                    <span style="color:green;">Hiển thị</span>
-                @else
-                    <span style="color:red;">Ẩn</span>
-                @endif
-            </td>
+@php
+    $today = \Carbon\Carbon::now();
+    $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+@endphp
+
+<td>
+    @if(!$tour->tinhkhadung)
+        <span style="color:orange;">Ẩn</span>
+    @elseif($end < $today)
+        <span style="color:red;">Hết hạn</span>
+    @else
+        <span style="color:green;">Hiển thị</span>
+    @endif
+</td>
             <td>
 
                 <a href="{{ route('admin.tours.edit', $tour->tourID) }}">
