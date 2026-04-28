@@ -34,6 +34,7 @@ class DashboardController extends Controller
         $toursBooked = $this->dashboard->getMostTourBooked();
         $newBooking = $this->dashboard->getNewBooking();
         $revenue = $this->dashboard->getRevenuePerMonth();
+        $totalUsers = DB::table('users')->count();
         
         return view('admin.dashboard', compact(
             'title',
@@ -42,7 +43,8 @@ class DashboardController extends Controller
             'paymentStatus',
             'toursBooked',
             'newBooking',
-            'revenue'
+            'revenue',
+            'totalUsers'
         ));
     }
     public function bookingDetail($id)
