@@ -8,33 +8,54 @@ use Illuminate\Support\Facades\DB;
 class ToursModel extends Model
 {
     protected $table = 'tours';
-    public function getAllTours($keyword = null, $mien = null, $price = null)
+   public function getAllTours($keyword = null, $mien = null, $price = null)
     {
-        $query = DB::table('tours')->where('ngayketthuc', '>=', now());
+        $query = DB::table('tours')
+            ->leftJoin('booking', 'tours.tourID', '=', 'booking.tourID') // 🔥 thêm
+            ->where('tours.ngayketthuc', '>=', now());
         if (!empty($keyword)) {
             if (is_numeric($keyword)) {
-                $query->where('tourID', $keyword);
+                $query->where('tours.tourID', $keyword);
             } else {
                 $query->where(function ($q) use ($keyword) {
-                    $q->where('title', 'like', '%' . $keyword . '%')
-                    ->orWhere('diemden', 'like', '%' . $keyword . '%')
-                    ->orWhere('mien', 'like', '%' . $keyword . '%');
+                    $q->where('tours.title', 'like', '%' . $keyword . '%')
+                    ->orWhere('tours.diemden', 'like', '%' . $keyword . '%')
+                    ->orWhere('tours.mien', 'like', '%' . $keyword . '%');
                 });
             }
         }
         if (!empty($mien)) {
-            $query->where('mien', $mien);
+            $query->where('tours.mien', $mien);
         }
         if (!empty($price)) {
             if ($price == '1') {
-                $query->where('gia_nguoiLon', '<', 2000000);
+                $query->where('tours.gia_nguoiLon', '<', 2000000);
             } elseif ($price == '2') {
-                $query->whereBetween('gia_nguoiLon', [2000000, 5000000]);
+                $query->whereBetween('tours.gia_nguoiLon', [2000000, 5000000]);
             } elseif ($price == '3') {
-                $query->where('gia_nguoiLon', '>', 5000000);
+                $query->where('tours.gia_nguoiLon', '>', 5000000);
             }
         }
-        return $query->get();
+        return $query->select(
+                'tours.*',
+                DB::raw('COALESCE(SUM(booking.adult_count + booking.child_count),0) as booked'),
+                DB::raw('(tours.socho - COALESCE(SUM(booking.adult_count + booking.child_count),0)) as conlai')
+            )
+            ->groupBy(
+                'tours.tourID',
+                'tours.title',
+                'tours.diemden',
+                'tours.mien',
+                'tours.socho',
+                'tours.gia_nguoiLon',
+                'tours.gia_emBe',
+                'tours.ngaybatdau',
+                'tours.ngayketthuc',
+                'tours.hinh',
+                'tours.mota',
+                'tours.tinhkhadung'
+            )
+            ->get();
     }
     public function createTours($data)
     {

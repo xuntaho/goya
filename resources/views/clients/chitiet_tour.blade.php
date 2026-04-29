@@ -21,8 +21,6 @@
 <div class="tour-gallery">
     <div class="container-fluid">
         <div class="row justify-content-center rel">
-
-            <!-- Ảnh lớn bên trái -->
             <div class="col-lg-6 col-md-12">
                 @if(isset($chitiet_tour->images[0]))
                     <div class="gallery-item">
@@ -31,10 +29,8 @@
                 @endif
             </div>
 
-
             <div class="col-lg-6 col-md-12">
                 <div class="row ">
-
                     @for ($i = 1; $i <= 4; $i++)
                         @if(isset($chitiet_tour->images[$i]))
                             <div class="col-6">
@@ -45,7 +41,6 @@
                             </div>
                         @endif
                     @endfor
-
                 </div>
             </div>
 
@@ -53,7 +48,6 @@
     </div>
 </div>
 <!-- Tour Gallery End -->
-
 
 <!-- Tour Header Area start -->
 <section class="tour-header-area pt-70 rel z-1">
@@ -86,7 +80,6 @@
 </section>
 <!-- Tour Header Area end -->
 
-
 <!-- Tour Details Area start -->
 <section class="tour-details-page pb-100">
     <div class="container">
@@ -116,7 +109,7 @@
                                 <ul class="list-style-one mt-25">
                                     <li><i class="far fa-times"></i> Chi phí cá nhân: điểm tham quan ngoài chương trình, giặt ủi trong khách sạn,…</li>
                                     <li><i class="far fa-times"></i> Chi phí các dịch vụ không được liệt kê trong phần bao gồm</li>
-                                    <li><i class="far fa-times"></i> Chi phí tham gia: tour cano 4 đảo, vé tham quan Vinvonders, vé tham quan Vinpearl Safari, vé cáp treo Hòn Thơm…</li>
+                                    <li><i class="far fa-times"></i> Chi phí tham gia: tour cano 4 đảo, vé tham quan Vinwonders, vé tham quan Vinpearl Safari, vé cáp treo Hòn Thơm…</li>
                                     <li><i class="far fa-times"></i> Chi phí tham gia các trò chơi trên biển, câu mực đêm, vé vào cổng ngắm hoàng hôn và phương tiện di chuyển trở về khách sạn</li>
                                     <li><i class="far fa-times"></i> Phụ thu phòng đơn resort 4*: 2,100,000 VNĐ/khách/tour</li>
                                     
@@ -125,9 +118,6 @@
                         </div>
                     </div>
                 </div>
-
-                
-
                 <h3>Lịch trình</h3>
                 <div class="accordion-two mt-25 mb-60" id="faq-accordion-two">
                     @php
@@ -150,17 +140,9 @@
                         </div>
                     @endforeach
                 </div>
-                
-
-
-                
-
-               
                  <div id="partials_reviews">
                     @include('clients.partials.review')
                 </div>
-                
-                    
                     <hr class="mt-30 mb-40">
                     @if(session('error'))
                         <div style="color:red; margin-bottom:10px;">
@@ -201,13 +183,6 @@
                         Bạn cần đặt và hoàn thành tour này mới được đánh giá!
                     </p>
                 @endif
-                     
-
-                   
-                   
-
-             
-
             </div>
             <div class="col-lg-4 col-md-8 col-sm-10 rmt-75">
                 <div class="blog-sidebar tour-sidebar">
@@ -227,17 +202,42 @@
                             </div>
                             <hr>
                             <div class="time py-5">
-                                <b>Thời gian :</b>
-                               @php
-                                    $start = \Carbon\Carbon::parse($chitiet_tour->ngaybatdau);
-                                    $end = \Carbon\Carbon::parse($chitiet_tour->ngayketthuc);
+                            @php
+                                $start = \Carbon\Carbon::parse($chitiet_tour->ngaybatdau);
+                                $end = \Carbon\Carbon::parse($chitiet_tour->ngayketthuc);
+                                $days = $start->diffInDays($end) + 1;
+                                $nights = $days - 1;
+                            @endphp
 
-                                    $days = $start->diffInDays($end) + 1;
-                                    $nights = $days - 1;
+                            <div style="display:flex; ">
+                                <b style="min-width:120px;">Thời gian :</b>
+
+                                <span style="flex:1;  ">
+                                    {{ $days }}N{{ $nights }}Đ
+                                </span>
+                            </div>
+
+                            <input type="hidden" name="time">
+                        </div>
+                           <hr>
+                            <div style="display:flex; gap:10px;">
+                                <b style="min-width:150px;">Số chỗ còn lại :</b>
+                                @php
+                                    $booked = DB::table('booking')
+                                        ->where('tourID', $chitiet_tour->tourID)
+                                        ->where('status', 'confirmed')
+                                        ->sum(DB::raw('adult_count + child_count'));
+
+                                    $conlai = $chitiet_tour->socho - $booked;
                                 @endphp
 
-                                <p>{{ $days }}N{{ $nights }}Đ</p>
-                                <input type="hidden" name="time">
+                                <span style="flex:1; ">
+                                    @if($conlai <= 0)
+                                        <span style="color:red;">Hết chỗ</span>
+                                    @else
+                                        <span >{{ $conlai }} chỗ</span>
+                                    @endif
+                                </span>
                             </div>
                             <hr class="mb-25">
                             <h6>Vé:</h6>
@@ -251,12 +251,15 @@
                                     
                                 </li>
                             </ul>
-                            
-                                <button type="submit" class="theme-btn style-two w-100 mt-15 mb-5">
-                                <span data-hover="Đặt ngay">Đặt ngay</span>
-                                <i class="fal fa-arrow-right"></i>
-                            </button>
-                           
+                                @if($conlai <= 0)
+                                    <button type="button" class="theme-btn style-two w-100 mt-15 mb-5" disabled style="background: gray;">
+                                        Hết chỗ
+                                    </button>
+                                @else
+                                    <button type="submit" class="theme-btn style-two w-100 mt-15 mb-5">
+                                        <span data-hover="Đặt ngay">Đặt ngay</span>
+                                    </button>
+                                @endif
                             <div class="text-center">
                                 <a href="{{ route('contact') }}">Bạn cần trợ giúp không?</a>
                             </div>

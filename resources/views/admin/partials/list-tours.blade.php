@@ -37,6 +37,7 @@
             <th>Tên</th>
             <th>Mô tả</th>
             <th>Số chỗ</th>
+            <th>Còn lại</th>
             <th>Giá NL</th>
             <th>Giá TE</th>
             <th>Điểm đến</th>
@@ -73,6 +74,15 @@
             </td>
 
             <td>{{ $tour->socho }}</td>
+            <td>
+                @if(($tour->conlai ?? $tour->socho) <= 0)
+                    <span style="color:red;">0 (Hết chỗ)</span>
+                @else
+                    <span style="color:green;">
+                        {{ $tour->conlai ?? $tour->socho }}
+                    </span>
+                @endif
+            </td>
 
             <td style="color:red;">
                 {{ number_format($tour->gia_nguoiLon, 0, ',', '.') }}
