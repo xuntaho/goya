@@ -21,6 +21,7 @@ class ChiTietToursController extends Controller
     {
         $title = 'Chi tiết tour';
     $chitiet_tour = $this->tour->getchitiet_tour($id);
+    $topTours = $this->tour->getTopTours();
     $bookingID = DB::table('booking')
     ->join('tours', 'booking.tourID', '=', 'tours.tourID')
     ->where('booking.userID', session('userID'))
@@ -40,7 +41,7 @@ class ChiTietToursController extends Controller
         ->get();
     $countReview = $getReviews->count();
     $avgStar = $getReviews->avg('sosao');
-    return view('clients.chitiet_tour', compact('title', 'chitiet_tour', 'getReviews','countReview','avgStar', 'bookingID'));
+    return view('clients.chitiet_tour', compact('title', 'chitiet_tour', 'getReviews','countReview','avgStar', 'bookingID', 'topTours'));
     }
    
     public function store(Request $request)

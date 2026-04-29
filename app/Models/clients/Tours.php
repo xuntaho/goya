@@ -26,7 +26,6 @@ class Tours extends Model
             ->where('tourID', $id) 
             ->first();
         if ($getchitiet_tour) {
-            //Lấy toàn bộ ảnh từ bảng 'image' có 'tourID' khớp với tour vừa tìm thấy
             $getchitiet_tour->images = DB::table('image')
                 ->where('tourID', $getchitiet_tour->tourID) 
                 ->pluck('imgurl')
@@ -69,6 +68,31 @@ class Tours extends Model
         return DB::table('tours')
             ->join('khuyenmai', 'tours.tourID', '=', 'khuyenmai.tourID')
             ->select('tours.*', 'khuyenmai.discount', 'khuyenmai.type')
+            ->get();
+    }
+    public function getTopTours()
+    {
+        return DB::table('booking')
+            ->join('tours', 'booking.tourID', '=', 'tours.tourID')
+            ->leftJoin('danhgia', 'tours.tourID', '=', 'danhgia.tourID')
+
+            ->select(
+                'tours.tourID',
+                'tours.title',
+                'tours.diemden',
+                'tours.hinh',
+                DB::raw('COUNT(booking.bookingID) as total_booked'),
+                DB::raw('AVG(danhgia.sosao) as avg_rating'),
+                DB::raw('COUNT(danhgia.id) as total_review')
+            )
+            ->groupBy(
+                'tours.tourID',
+                'tours.title',
+                'tours.diemden',
+                'tours.hinh'
+            )
+            ->orderByDesc('total_booked')
+            ->limit(3)
             ->get();
     }
 }

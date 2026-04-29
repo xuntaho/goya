@@ -128,40 +128,39 @@
                                 </ul>
                             </div>
                             
-                            <div class="widget widget-tour" data-aos="fade-up" data-aos-duration="1500" data-aos-offset="50">
-                                <h6 class="widget-title">Tours Phổ biến</h6>
+                           <div class="widget widget-tour">
+                            <h6 class="widget-title">Tours phổ biến</h6>
+
+                                @foreach($topTours as $tour)
                                 <div class="destination-item tour-grid style-three bgc-lighter">
                                     <div class="image">
-                                        <span class="badge">10% Off</span>
-                                        <img src="{{ asset('clients/assets/images/widgets/tour1.jpg') }}" alt="Tour">
+                                        <span class="badge">Hot</span>
+                                        <img src="{{ $tour->hinh }}" alt="Tour">
                                     </div>
                                     <div class="content">
                                         <div class="destination-header">
-                                            <span class="location"><i class="fal fa-map-marker-alt"></i> Bali, Indonesia</span>
+                                            <span class="location">
+                                                <i class="fal fa-map-marker-alt"></i> {{ $tour->diemden }}
+                                            </span>
                                             <div class="ratting">
-                                                <i class="fas fa-star"></i>
-                                                <span>(4.8)</span>
+                                                ⭐ {{ number_format($tour->avg_rating ?? 0, 1) }}
+                                                <span>({{ $tour->total_review }})</span>
+                                            </div>
+
+                                            <div style="font-size:12px; color:orange;">
+                                                🔥 {{ $tour->total_booked }} lượt đặt
                                             </div>
                                         </div>
-                                        <h6><a href="tour-details.html">Relinking Beach, Bali, Indonesia</a></h6>
+
+                                        <h6>
+                                            <a href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}">
+                                                {{ $tour->title }}
+                                            </a>
+                                        </h6>
                                     </div>
                                 </div>
-                                <div class="destination-item tour-grid style-three bgc-lighter">
-                                    <div class="image">
-                                        <span class="badge">10% Off</span>
-                                        <img src="{{ asset('clients/assets/images/widgets/tour1.jpg') }}" alt="Tour">
-                                    </div>
-                                    <div class="content">
-                                        <div class="destination-header">
-                                            <span class="location"><i class="fal fa-map-marker-alt"></i> Bali, Indonesia</span>
-                                            <div class="ratting">
-                                                <i class="fas fa-star"></i>
-                                                <span>(4.8)</span>
-                                            </div>
-                                        </div>
-                                        <h6><a href="tour-details.html">Relinking Beach, Bali, Indonesia</a></h6>
-                                    </div>
-                                </div>
+                                @endforeach
+
                             </div>
                         </div>
                         

@@ -22,6 +22,7 @@ class ToursController extends Controller
     {
         $title = 'Tours';
         $tours = $this->tours->getAllTours();
+         $topTours = $this->tours->getTopTours();
         $count = $tours->count();
         $mien= $this->tours->getDomain();
         $mien_bac_count= optional($mien->firstWhere('mien', 'Bac'))->count;
@@ -31,7 +32,7 @@ class ToursController extends Controller
             'mien_nam' => optional($mien->firstWhere('mien', 'Nam'))->count,
             
         ];
-        return view('clients.tours', compact('title', 'tours', 'count', 'mienCount'));
+        return view('clients.tours', compact('title', 'tours', 'count', 'mienCount', 'topTours'));
     }
     public function filterTours(Request $req)
     {
