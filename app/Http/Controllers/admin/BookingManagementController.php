@@ -80,3 +80,4 @@ class BookingManagementController extends Controller
             ], 500);
         }
     }
+}
