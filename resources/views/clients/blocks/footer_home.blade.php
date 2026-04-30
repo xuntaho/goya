@@ -133,13 +133,9 @@
 
     </div>
     <!--End pagewrapper-->
-   
-    
-    <!-- Jquery -->
-    <!-- 1. jQuery -->
+ 
 <script src="{{ asset('clients/assets/js/jquery-3.6.0.min.js') }}"></script>
 
-<!-- 2. Plugin -->
 <script src="{{ asset('clients/assets/js/bootstrap.min.js') }}"></script>
 <script src="{{ asset('clients/assets/js/appear.min.js') }}"></script>
 <script src="{{ asset('clients/assets/js/slick.min.js') }}"></script>
@@ -149,17 +145,9 @@
 <script src="{{ asset('clients/assets/js/skill.bars.jquery.min.js') }}"></script>
 <script src="{{ asset('clients/assets/js/isotope.pkgd.min.js') }}"></script>
 <script src="{{ asset('clients/assets/js/aos.js') }}"></script>
-
-<!-- 3. jQuery UI + datetime -->
 <script src="{{ asset('clients/assets/js/jquery-ui.min.js') }}"></script>
 <script src="{{ asset('clients/assets/css_login/js/jquery.datetimepicker.full.min.js') }}"></script>
-
-<!-- 4. Script phụ -->
 <script src="{{ asset('clients/assets/js/script.js') }}"></script>
-
-<!-- 5. Custom (LUÔN CUỐI) -->
 <script src="{{ asset('clients/assets/js/custom.js') }}"></script>
-
-
 </body>
 </html>

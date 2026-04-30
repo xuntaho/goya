@@ -27,15 +27,21 @@
                 <h3>Tổng quan</h3>
                 <ul class="nav side-menu">
                     <li><a href="{{ route('admin.dashboard') }}"><i class="fa fa-dashboard"></i> Dashboard</a> </li>
-                    <li><a href="{{ route('admin.users') }}"><i class="fa fa-table"></i> Quản lý người dùng</a> </li>
-                    <li><a><i class="fa fa-table"></i> Quản lý Tours<span class="fa fa-chevron-down"></span></a>
+                    <li><a href="{{ route('admin.users') }}"><i class="fa fa-users"></i> Quản lý người dùng</a> </li>
+                    <li><a><i class="fa fa-plane"></i> Quản lý Tours<span class="fa fa-chevron-down"></span></a>
                         <ul class="nav child_menu">
-                            <li><a href="{{ route('admin.tours.create') }}">Thêm Tours</a></li>
-                            <li><a href="{{ route('admin.tours') }}">Danh sách Tours</a></li>
+                            <li><a href="{{ route('admin.tours.create') }}"><i class="fa fa-plus-square"></i> Thêm Tours</a></li>
+                            <li><a href="{{ route('admin.tours') }}"> <i class="fa fa-list-alt"></i> Danh sách Tours</a></li>
                         </ul>
                     </li>
 
-                    <li><a href="{{ route('admin.booking') }}"><i class="fa fa-home"></i> Quản lý Booking</a> </li>
+                    <li><a href="{{ route('admin.booking') }}"><i class="fa fa-ticket"></i> Quản lý Booking</a> </li>
+                    <li><a><i class="fa fa-tags"></i> Quản lý Khuyến mãi<span class="fa fa-chevron-down"></span></a>
+                        <ul class="nav child_menu">
+                            <li><a href="{{ route('admin.khuyenmai') }}"><i class="fa fa-plus-square"></i> Thêm Khuyến mãi</a></li>
+                            <li><a href="{{ route('admin.listKM') }}"><i class="fa fa-list-alt"></i> Danh sách Khuyến mãi</a></li>
+                        </ul>
+                    </li>
 
                 </ul>
             </div>

@@ -23,6 +23,7 @@ use App\Http\Controllers\admin\LoginAdminController;
 use App\Http\Controllers\admin\DashboardController;
 use App\Http\Controllers\admin\AdminManagementController;
 use App\Http\Controllers\admin\BookingManagementController;
+use App\Http\Controllers\admin\KhuyenMaiController;
 use App\Http\Controllers\admin\UserManagementController;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -94,6 +95,18 @@ Route::prefix('admin')->group(function () {
     Route::post('/update-admin', [AdminManagementController::class, 'updateAdmin'])->name('admin.update-admin');
     Route::post('/update-avatar', [AdminManagementController::class, 'updateAvatar'])->name('admin.update-avatar');
 
+    Route::get('/khuyenmai', [KhuyenMaiController::class, 'create'])
+        ->name('admin.khuyenmai');
+   Route::post('/khuyenmai/add', [KhuyenMaiController::class, 'store'])
+    ->name('admin.khuyenmai.store');
+    Route::get('/khuyenmai/list', [KhuyenMaiController::class, 'index'])
+        ->name('admin.listKM');
+    Route::get('/khuyenmai/delete/{id}', [KhuyenMaiController::class, 'delete'])
+    ->name('admin.khuyenmai.delete');
+    Route::get('/admin/khuyenmai/edit/{id}', [KhuyenMaiController::class, 'edit'])
+    ->name('admin.khuyenmai.edit');
+    Route::post('/khuyenmai/update/{id}', [KhuyenMaiController::class, 'update'])
+    ->name('admin.khuyenmai.update');
 //TOURS
 
     Route::get('/tours', [ToursManagementController::class, 'index'])

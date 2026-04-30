@@ -20,19 +20,12 @@
                                 <h2>Form</h2>
                                 <div class="clearfix"></div>
                             </div>
-
-                            <!-- ✅ FIX DIV -->
                             <div class="x_content add-tours">
-
-                                <p>Thêm thông tin chi tiết để tạo một tour mới!</p>
-
-                                <!-- ✅ 1 FORM DUY NHẤT -->
                                 <form action="{{ route('admin.tours.add') }}" 
                                       method="POST" 
                                       enctype="multipart/form-data">
                                     @csrf
 
-                                    <!-- THÔNG TIN -->
                                     <div class="field item form-group">
                                         <label class="col-md-3">Tên</label>
                                         <div class="col-md-6">
@@ -101,7 +94,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- ✅ UPLOAD ẢNH (KHÔNG DROPZONE) -->
                                     <div class="field item form-group">
                                         <label class="col-md-3">Hình ảnh</label>
                                         <div class="col-md-6">
@@ -109,7 +101,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- ✅ LỘ TRÌNH -->
                                     <div class="field item form-group">
                                         <label class="col-md-3">Lộ trình</label>
                                         <div class="col-md-6">
@@ -117,7 +108,6 @@
                                         </div>
                                     </div>
 
-                                    <!-- BUTTON -->
                                     <div class="form-group">
                                         <div class="col-md-6 col-md-offset-3">
                                             <button type="submit" class="btn btn-success">
@@ -125,9 +115,7 @@
                                             </button>
                                         </div>
                                     </div>
-
                                 </form>
-
                             </div>
                         </div>
                     </div>
@@ -135,10 +123,6 @@
             </div>
         </div>
 
-        <footer>
-            <div class="pull-right">Admin</div>
-            <div class="clearfix"></div>
-        </footer>
     </div>
 </div>
 @include('admin.blocks.footer')

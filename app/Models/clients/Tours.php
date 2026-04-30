@@ -69,10 +69,13 @@ class Tours extends Model
     }
      public function getHotDeals()
     {
-        return DB::table('tours')
-            ->join('khuyenmai', 'tours.tourID', '=', 'khuyenmai.tourID')
-            ->select('tours.*', 'khuyenmai.discount', 'khuyenmai.type')
-            ->get();
+       return DB::table('tours')
+        ->join('khuyenmai', 'tours.tourID', '=', 'khuyenmai.tourID')
+        ->where('khuyenmai.trangthai', 'active')
+        ->whereDate('khuyenmai.ngaybatdau', '<=', now())
+        ->whereDate('khuyenmai.ngayketthuc', '>=', now())
+        ->select('tours.*', 'khuyenmai.discount', 'khuyenmai.type')
+        ->get();
     }
     public function getTopTours()
     {

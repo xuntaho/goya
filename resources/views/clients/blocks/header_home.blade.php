@@ -102,9 +102,7 @@
                                             href="{{ route('noiden') }}">Điểm đến</a></li>
                                     <li class="{{ Request::url() == route('contact') ? 'active' : '' }}"><a
                                             href="{{ route('contact') }}">Liên hệ</a></li>
-                                    <li class="{{ Request::url() == route('blog') ? 'active' : '' }}"><a
-                                            href="{{ route('blog') }}">Blog</a>
-                                    </li>
+                                    
                                 </ul>
                             </div>
 

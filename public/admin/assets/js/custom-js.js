@@ -126,6 +126,8 @@ $('.delete-tour').click(function () {
 
 });
 
+    $(document).ready(function () {
+
     $('#start_date').datetimepicker({
         timepicker: false,
         format: 'd-m-Y'
@@ -135,14 +137,15 @@ $('.delete-tour').click(function () {
         timepicker: false,
         format: 'd-m-Y'
     });
-
+    
      $('.datetimepicker').datetimepicker({
         format: 'd-m-Y',
         timepicker: false,
-        minDate: 0 // 
+        minDate: 0 
     });
 
-    // ================= VALIDATE FORM =================
+    });
+
     $('#btn-submit').click(function (e) {
 
         let title = $('input[name="title"]').val().trim();
@@ -333,29 +336,43 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
 });
-
-
-$(document).on('click', '.btn-active, .btn-ban, .btn-unban, .btn-delete, .btn-restore', function () {
-
-    let data = $(this).data('attr');
-
-    if (!confirm("Bạn có chắc muốn thực hiện thao tác này?")) return;
-
-    $.ajax({
-        url: data.action,
-        method: "POST",
-        data: {
-            userId: data.userId,
-            status: data.status || '',
-            _token: $('meta[name="csrf-token"]').attr('content')
-        },
-        success: function (res) {
-            alert(res.message);
-            location.reload();
-        },
-        error: function () {
-            alert("Có lỗi xảy ra!");
-        }
-    });
-
+    
+$('#form-km-edit').on('submit', function (e) {
+    validateKM(e);
 });
+$('#form-km-create').on('submit', function (e) {
+    validateKM(e);
+});
+function validateKM(e) {
+    let discount = $('input[name="discount"]').val();
+    let soluong = $('input[name="soluong"]').val();
+    let start = $('#start_date').val();
+    let end = $('#end_date').val();
+
+    if (!discount || discount <= 0) {
+        toastr.error("Giảm giá phải > 0");
+        e.preventDefault();
+        return false;
+    }
+
+    if (soluong < 0) {
+        toastr.error("Số lượng không hợp lệ");
+        e.preventDefault();
+        return false;
+    }
+
+    if (!start || !end) {
+        toastr.error("Vui lòng chọn ngày");
+        e.preventDefault();
+        return false;
+    }
+
+    let s = new Date(start.split('-').reverse().join('-'));
+    let eDate = new Date(end.split('-').reverse().join('-'));
+
+    if (s > eDate) {
+        toastr.error("Ngày kết thúc phải sau ngày bắt đầu");
+        e.preventDefault();
+        return false;
+    }
+}

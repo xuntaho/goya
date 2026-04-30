@@ -38,7 +38,16 @@
                                 <h6 class="tour-title"><a
                                         href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}">{{ $tour->title }}</a>
                                 </h6>
-                                <span class="time">{{ $tour->thoigian }}</span>
+                                @php
+                                    $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                                    $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+                                    $days = $start->diffInDays($end) + 1;
+                                    $nights = $days - 1;
+                                @endphp
+
+                                <span class="time">
+                                    {{ $days }}N{{ $nights }}Đ
+                                </span>
                                 <a href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}" class="more"><i
                                         class="fas fa-chevron-right"></i></a>
                             </div>
@@ -86,7 +95,16 @@
                         <div class="content">
                             <span class="location"><i class="fal fa-map-marker-alt"></i> {{ $tour->diemden }}</span>
                             <h5><a href="{{ route('chitiet_tour', ['id' => $tour->tourID]) }}">{{ $tour->title }}</a></h5>
-                            <span class="time">{{ $tour->thoigian }}</span>
+                            @php
+                                $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                                $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+                                $days = $start->diffInDays($end) + 1;
+                                $nights = $days - 1;
+                            @endphp
+
+                            <span class="time">
+                                {{ $days }}N{{ $nights }}Đ
+                            </span>
                         </div>
                         <div class="destination-footer">
                             <span class="price"><span>{{ number_format($tour->gia_nguoiLon, 0, ',', '.') }}</span> VND/
@@ -109,20 +127,19 @@
 @include ('clients.blocks.letter')
 @include ('clients.blocks.footer')
 <style>
-    
-.image {
-    position: relative;
-}
+    .image {
+        position: relative;
+    }
 
-.badge {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    background: red;
-    color: #fff;
-    padding: 5px 10px;
-    border-radius: 5px;
-    z-index: 10;
-    font-weight: bold;
-}
+    .badge {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: red;
+        color: #fff;
+        padding: 5px 10px;
+        border-radius: 5px;
+        z-index: 10;
+        font-weight: bold;
+    }
 </style>
