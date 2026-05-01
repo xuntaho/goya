@@ -14,9 +14,27 @@ class CheckoutController extends Controller
         $title = 'Đặt tour';
         $tour = DB::table('tours')->where('tourID', $id)->first();
         $coupon = DB::table('khuyenmai')
-        ->where('tourID', $id)
+        ->whereNotNull('code') // chỉ coupon
         ->where('trangthai', 'active')
         ->where('soluong', '>', 0)
+        ->whereDate('ngaybatdau', '<=', now())
+        ->whereDate('ngayketthuc', '>=', now())
+        ->where(function($q) use ($id) {
+            $q->where('tourID', $id)     
+            ->orWhereNull('tourID');   
+        })
+        ->first();
+       
+         $autoKM = DB::table('khuyenmai')
+        ->whereNull('code')
+        ->where('trangthai', 'active')
+        ->whereDate('ngaybatdau', '<=', now())
+        ->whereDate('ngayketthuc', '>=', now())
+        ->where(function($q) use ($id) {
+            $q->where('tourID', $id)
+            ->orWhereNull('tourID');
+        })
+        ->orderByRaw('tourID IS NULL')
         ->first();
 
         $user = null;
@@ -26,14 +44,15 @@ class CheckoutController extends Controller
            $this->user = new User();
             $user = $this->user->getUser($userID);
         }
-        return view('clients.checkout', compact('tour', 'title', 'coupon', 'user'));
+        return view('clients.checkout', compact('tour', 'title', 'coupon', 'user', 'autoKM'));
     }
-    public function store(Request $request)
+  public function store(Request $request)
     {
         $userID = session('userID');
         if (!$userID) {
             return redirect('/login?redirect=checkout&tourID=' . $request->tourID);
         }
+
         $request->validate([
             'tourID' => 'required',
             'adult_count' => 'required|integer|min:1',
@@ -48,45 +67,81 @@ class CheckoutController extends Controller
         if (!$request->has('agree')) {
             return back()->with('error', 'Bạn phải đồng ý điều khoản');
         }
+
         $tour = DB::table('tours')->where('tourID', $request->tourID)->first();
 
-            if (!$tour) {
+        if (!$tour) {
             return redirect('/')->with('error', 'Tour không tồn tại');
         }
+
         DB::beginTransaction();
+
         try {
+            $child = $request->child_count ?? 0;
 
             $total = ($request->adult_count * $tour->gia_nguoiLon)
-                + ($request->child_count * $tour->gia_emBe);
+                + ($child * $tour->gia_emBe);
 
             $discount = 0;
+            $kmID = null;
+
+            $couponDiscount = 0;
+            $couponKM = null;
 
             if ($request->coupon_code) {
-            $coupon = DB::table('khuyenmai')
-                ->where('code', $request->coupon_code)
+                $couponKM = DB::table('khuyenmai')
+                    ->where('code', $request->coupon_code)
+                    ->where('trangthai', 'active')
+                    ->where('soluong', '>', 0)
+                    ->whereDate('ngaybatdau', '<=', now())
+                    ->whereDate('ngayketthuc', '>=', now())
+                    ->where(function($q) use ($request) {
+                        $q->where('tourID', $request->tourID)
+                        ->orWhereNull('tourID');
+                    })
+                    ->first();
+
+                if ($couponKM) {
+                    $couponDiscount = $couponKM->type == 'percent'
+                        ? $total * $couponKM->discount / 100
+                        : $couponKM->discount;
+                }
+            }
+
+            $autoDiscount = 0;
+
+            $autoKM = DB::table('khuyenmai')
+                ->whereNull('code')
                 ->where('trangthai', 'active')
-                ->where('soluong', '>', 0)
                 ->whereDate('ngaybatdau', '<=', now())
                 ->whereDate('ngayketthuc', '>=', now())
                 ->where(function($q) use ($request) {
                     $q->where('tourID', $request->tourID)
                     ->orWhereNull('tourID');
                 })
+                ->orderByRaw('tourID IS NULL')
                 ->first();
 
-            if (!$coupon) {
-                DB::rollBack();
-                return back()->with('error', 'Mã giảm giá không hợp lệ');
+            if ($autoKM) {
+                $autoDiscount = $autoKM->type == 'percent'
+                    ? $total * $autoKM->discount / 100
+                    : $autoKM->discount;
             }
 
-        $discount = $coupon->type == 'percent'
-            ? $total * $coupon->discount / 100
-            : $coupon->discount;
+            if ($couponDiscount >= $autoDiscount) {
+                $discount = $couponDiscount;
+                $kmID = $couponKM->kmID ?? null;
 
-        DB::table('khuyenmai')
-            ->where('kmID', $coupon->kmID)
-            ->decrement('soluong');
-    }
+                if ($couponKM) {
+                    DB::table('khuyenmai')
+                        ->where('kmID', $couponKM->kmID)
+                        ->decrement('soluong');
+                }
+            } else {
+                $discount = $autoDiscount;
+                $kmID = $autoKM->kmID ?? null;
+            }
+
             $finalTotal = max(0, $total - $discount);
 
             $bookingID = DB::table('booking')->insertGetId([
@@ -98,30 +153,31 @@ class CheckoutController extends Controller
                 'address' => $request->address,
                 'booking_date' => now(),
                 'adult_count' => $request->adult_count,
-                'child_count' => $request->child_count,
+                'child_count' => $child,
                 'total_price' => $finalTotal,
+            
                 'status' => 'pending',
                 'created_at' => now()
             ]);
-            //dd($bookingID);
+
             DB::table('hoadon')->insert([
                 'bookingID' => $bookingID,
                 'tongtien' => $finalTotal,
                 'ngayTT' => now(),
-                'trangthai' => $request->payment_method == 'cash' ? 'pending' : 'paid', 
+                'trangthai' => $request->payment_method == 'cash' ? 'pending' : 'paid',
                 'mahoadon' => 'HD' . time(),
                 'chitiet' => $request->payment_method == 'cash'
                     ? 'Thanh toán tại văn phòng'
-                    : 'Thanh toán online', 
+                    : 'Thanh toán online',
                 'created_at' => now()
             ]);
 
-        DB::table('thanhtoan')->insert([
+            DB::table('thanhtoan')->insert([
                 'bookingID' => $bookingID,
                 'pthucTT' => $request->payment_method,
                 'ngaytt' => now(),
                 'giatien' => $finalTotal,
-                'trangthai' => $request->payment_method == 'cash' ? 'pending' : 'paid', 
+                'trangthai' => $request->payment_method == 'cash' ? 'pending' : 'paid',
                 'magd' => 'GD' . time(),
                 'created_at' => now()
             ]);
@@ -136,17 +192,14 @@ class CheckoutController extends Controller
             DB::commit();
 
             if ($request->payment_method == 'cash') {
-                return back()->with('success', 'Đặt tour thành công!');
+                return redirect('/')->with('success', 'Đặt tour thành công!');
             }
-
             if ($request->payment_method == 'bank') {
                 return redirect()->route('bank.page', ['id' => $bookingID]);
             }
-
             if ($request->payment_method == 'momo') {
                 return redirect()->route('momo.page', ['id' => $bookingID]);
             }
-
             return back()->with('error', 'Phương thức không hợp lệ');
 
         } catch (\Exception $e) {
@@ -181,8 +234,6 @@ class CheckoutController extends Controller
         'type' => $coupon->type
     ]);
     }
-
-
     public function paymentSuccess(Request $request)
     {
         DB::table('thanhtoan')
@@ -199,7 +250,6 @@ class CheckoutController extends Controller
 
         return redirect('/')->with('success', 'Thanh toán thành công!');
     }
-
     public function bankPage($id)
     {
         $data = DB::table('booking')
@@ -218,7 +268,6 @@ class CheckoutController extends Controller
         if (!$data) {
             abort(404);
         }
-
         return view('clients.bank', compact('data'));
     }
    public function momoPage($id)
@@ -228,7 +277,6 @@ class CheckoutController extends Controller
             ->join('thanhtoan', 'booking.bookingID', '=', 'thanhtoan.bookingID')
             ->where('booking.bookingID', $id)
             ->first();
-
         return view('clients.momo', compact('data'));
     }
 

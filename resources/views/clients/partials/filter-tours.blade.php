@@ -34,6 +34,7 @@
                     @endphp
 
                     <li><i class="far fa-clock"></i> {{ $days }}N{{ $nights }}Đ</li>
+                    
                         <li>
                             <i class="far fa-user"></i> 
                             {{ $tour->conlai }}

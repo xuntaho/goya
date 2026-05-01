@@ -237,12 +237,28 @@ $(document).ready(function () {
         if ($(".price-slider-range").length) {
             // Đưa slider về mức ban đầu (ví dụ 0 đến 30 triệu)
             $(".price-slider-range").slider("values", [0, 30000000]);
-            $("#price").val("0 đ - 30.000.000 đ"); 
+            $("#price").val("0 đ - 30000000 đ");
         }
 
         // Gọi lại hàm lọc để server trả về full danh sách
         filterTour(); 
+         
     });
+    if ($(".price-slider-range").length) {
+
+        $(".price-slider-range").on("slidechange", function(event, ui) {
+
+            let min = ui.values[0];
+            let max = ui.values[1];
+
+           $("#price").val(
+    min.toLocaleString('vi-VN') + " đ - " + max.toLocaleString('vi-VN') + " đ"
+);
+            console.log("Price:", min, max);
+
+            filterTour(); 
+        });
+    }
 
     // thong tin user
       $(".updateUser").on("submit", function (e) {
@@ -347,26 +363,22 @@ $(document).ready(function () {
 });
     
 let coupon = null;
-// ===== TÍNH TỔNG TIỀN =====
+
 function updateTotal() {
     let adult = document.getElementById('adult_count');
     let child = document.getElementById('child_count');
 
     if (!adult || !child) return;
 
-    // ===== SỐ LƯỢNG =====
     let adultQty = parseInt(adult.value) || 0;
     let childQty = parseInt(child.value) || 0;
 
-    // ===== GIÁ =====
     let adultPrice = parseInt(adult.dataset.price) || 0;
     let childPrice = parseInt(child.dataset.price) || 0;
 
-    // ===== UPDATE UI =====
     document.querySelector('.quantity_adult').innerText = adultQty;
     document.querySelector('.quantity_child').innerText = childQty;
 
-    // ===== TIỀN TỪNG LOẠI =====
     let adultTotal = adultQty * adultPrice;
     let childTotal = childQty * childPrice;
 
@@ -376,11 +388,16 @@ function updateTotal() {
     document.querySelector('.child_total').innerText =
         childTotal.toLocaleString('vi-VN') + " VNĐ";
 
-    // ===== TỔNG =====
     let total = adultTotal + childTotal;
 
-    // ===== GIẢM GIÁ =====
     let discount = 0;
+    if (typeof autoKM !== 'undefined' && autoKM) {
+        if (autoKM.type === 'percent') {
+            discount = total * autoKM.discount / 100;
+        } else {
+            discount = autoKM.discount;
+        }
+    }
 
     if (coupon && coupon.discount > 0) {
         if (coupon.type === 'percent') {
@@ -389,12 +406,9 @@ function updateTotal() {
             discount = coupon.discount;
         }
     }
-
-    // ===== KHÔNG ÂM =====
     let finalTotal = total - discount;
     if (finalTotal < 0) finalTotal = 0;
 
-    // ===== HIỂN THỊ =====
     document.querySelector('.discount_price').innerText =
         discount.toLocaleString('vi-VN') + " VNĐ";
 
@@ -402,7 +416,6 @@ function updateTotal() {
         finalTotal.toLocaleString('vi-VN') + " VNĐ";
 }
 
-// ===== NÚT + - =====
 document.querySelectorAll('.quantity-btn').forEach(btn => {
     btn.addEventListener('click', function () {
         let input = this.parentElement.querySelector('input');
@@ -457,96 +470,86 @@ function applyCoupon() {
         }
     });
 }
-
-
-let submitBtn = document.getElementById('submitBtn');
-
-if (submitBtn) {
-    submitBtn.addEventListener('click', function (e) {
-       let name = document.getElementById('username').value.trim();
-    let email = document.getElementById('email').value.trim();
-    let phone = document.getElementById('phone').value.trim();
-
-    let payment = document.querySelector('input[name="payment_method"]:checked');
-
-    // ===== TÊN =====
-    let nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
-
-    if (!name) {
-        e.preventDefault();
-        toastr.error("Vui lòng nhập họ tên");
-        return;
-    }
-
-    if (!nameRegex.test(name)) {
-        e.preventDefault();
-        toastr.error("Tên không được chứa ký tự đặc biệt");
-        return;
-    }
-
-    // ===== EMAIL =====
-    let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-    if (!email) {
-        e.preventDefault();
-        toastr.error("Vui lòng nhập email");
-        return;
-    }
-
-    if (!emailRegex.test(email)) {
-        e.preventDefault();
-        toastr.error("Email không đúng định dạng");
-        return;
-    }
-
-    // ===== SĐT =====
-    
-    let phoneRegex = /^[0-9]{10,11}$/;
-
-    if (!phone) {
-        e.preventDefault();
-        toastr.error("Vui lòng nhập số điện thoại");
-        return;
-    }
-
-    
-    if (!phoneRegex.test(phone)) {
-        e.preventDefault();
-        toastr.error("Số điện thoại chỉ được là số và phải đủ 10-11 chữ số");
-        return;
-    }
-
-    // ===== THANH TOÁN =====
-    if (!payment) {
-        e.preventDefault();
-        toastr.warning("Chọn phương thức thanh toán");
-        return;
-    }
-if (payment.value === 'cash') {
-    toastr.info("Thanh toán tại văn phòng");
-}
-    // ===== ĐỒNG Ý =====
-    if (!document.getElementById('agree').checked) {
-        e.preventDefault();
-        toastr.warning("Bạn phải đồng ý điều khoản");
-        return;
-    }
-    });
-}
-//
-
-    // ===== THÔNG BÁO CASH =====
-
-///xu ly nut dong y
 document.addEventListener('DOMContentLoaded', function () {
-    let agree = document.getElementById('agree');
-    let btn = document.getElementById('submitBtn');
 
-    if (agree && btn) {
-        agree.addEventListener('change', function () {
-            btn.disabled = !this.checked;
+    let form = document.getElementById('checkout-form');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+
+        let name = document.getElementById('username').value.trim();
+        let email = document.getElementById('email').value.trim();
+        let phone = document.getElementById('phone').value.trim();
+        let agree = document.getElementById('agree');
+        let payment = document.querySelector('input[name="payment_method"]:checked');
+
+        let nameRegex = /^[a-zA-ZÀ-ỹ\s]+$/;
+        let emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        let phoneRegex = /^[0-9]{10,11}$/;
+
+        if (!name) {
+            e.preventDefault();
+            toastr.error("Vui lòng nhập họ tên");
+            return;
+        }
+
+        if (!nameRegex.test(name)) {
+            e.preventDefault();
+            toastr.error("Tên không hợp lệ");
+            return;
+        }
+
+        if (!email) {
+            e.preventDefault();
+            toastr.error("Vui lòng nhập email");
+            return;
+        }
+
+        if (!emailRegex.test(email)) {
+            e.preventDefault();
+            toastr.error("Email không đúng định dạng");
+            return;
+        }
+
+        if (!phone) {
+            e.preventDefault();
+            toastr.error("Vui lòng nhập số điện thoại");
+            return;
+        }
+
+        if (!phoneRegex.test(phone)) {
+            e.preventDefault();
+            toastr.error("SĐT phải 10-11 số");
+            return;
+        }
+
+        if (!payment) {
+            e.preventDefault();
+            toastr.warning("Chọn phương thức thanh toán");
+            return;
+        }
+
+        if (!agree.checked) {
+            e.preventDefault();
+            toastr.warning("Bạn phải đồng ý điều khoản");
+            return;
+        }
+        e.preventDefault(); // chặn submit tạm
+
+        if (payment.value === 'cash') {
+            toastr.success("Đặt tour thành công!");
+        } else if (payment.value === 'bank') {
+            toastr.info("Đang chuyển sang ngân hàng...");
+        } else if (payment.value === 'momo') {
+            toastr.info("Đang chuyển sang MoMo...");
+        }
+
+        setTimeout(() => {
+            form.submit(); // submit lại sau 1s
+        }, 1000);
+
         });
-    }
+
 });
 
 $(document).ready(function () {

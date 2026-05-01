@@ -4,7 +4,7 @@
 <section class="container" style="margin-top: 50px">
 
 
-    <form action="{{ route('checkout.store') }}" method="POST" class="checkout-container">
+    <form id="checkout-form" action="{{ route('checkout.store') }}" method="POST" class="checkout-container">
         @csrf
         <input type="hidden" name="tourID" value="{{ $tour->tourID }}">
         <input type="hidden" name="coupon_code" id="coupon_hidden">
@@ -14,28 +14,30 @@
             <div class="checkout__infor">
                 <div class="form-group">
                     <label for="username">Họ và tên*</label>
-                    <input type="text" id="username" placeholder="Nhập Họ và tên" name="username" value="{{ $user->username ?? '' }}" required>
-                    
+                    <input type="text" id="username" placeholder="Nhập Họ và tên" name="username"
+                        value="{{ $user->username ?? '' }}" required>
+
                 </div>
 
                 <div class="form-group">
                     <label for="email">Email*</label>
-                   
-                    <input type="email" id="email" name="email" placeholder="sample@gmail.com"  value="{{ $user->email ?? '' }}" required>
+
+                    <input type="email" id="email" name="email" placeholder="sample@gmail.com"
+                        value="{{ $user->email ?? '' }}" required>
                 </div>
 
                 <div class="form-group">
                     <label for="tel">Số điện thoại*</label>
                     <input type="tel" id="phone" name="phone" placeholder="Nhập số điện thoại liên hệ"
                         value="{{ $user->sdt ?? '' }}" required>
-                   
+
                 </div>
 
                 <div class="form-group">
                     <label for="address">Địa chỉ*</label>
-                    <input type="text" id="address" name="address" placeholder="Nhập địa chỉ liên hệ" 
-                         value="{{ $user->diachi ?? '' }}" required>
-                    
+                    <input type="text" id="address" name="address" placeholder="Nhập địa chỉ liên hệ"
+                        value="{{ $user->diachi ?? '' }}" required>
+
                 </div>
             </div>
 
@@ -48,8 +50,8 @@
                     <label>Người lớn</label>
                     <div class="input__quanlity">
                         <button type="button" class="quantity-btn">-</button>
-                        <input type="number" name="adult_count" class="quantity-input" id="adult_count" value="1" min="1"
-                            data-price="{{ $tour->gia_nguoiLon }}" readonly>
+                        <input type="number" name="adult_count" class="quantity-input" id="adult_count" value="1"
+                            min="1" data-price="{{ $tour->gia_nguoiLon }}" readonly>
                         <button type="button" class="quantity-btn">+</button>
                     </div>
                 </div>
@@ -106,7 +108,7 @@
             <div class="summary-section">
                 <div>
                     <p>Mã tour: {{ $tour->tourID }} </p>
-                    
+
                     <h4>{{ $tour->title }}</h4>
                     <p>Ngày khởi hành : {{ $tour->ngaybatdau }}</p>
 
@@ -138,17 +140,30 @@
                         </div>
                     </div>
                     @if($coupon)
-                        <p style="color: green; font-size: 16px; margin-bottom: 5px;">
-                            🎁Nhập mã <b>{{ $coupon->code }}</b> - nhận ngay mã giảm 
+                                    <p style="color: green; font-size: 16px; margin-bottom: 5px;">
+                                        🎁 Nhập mã <b>{{ $coupon->code }}</b> - nhận ngay giảm
+                                        <b>
+                                            {{ $coupon->type == 'percent'
+                        ? $coupon->discount . '%'
+                        : number_format($coupon->discount) . ' VNĐ' }}
+                                        </b>
+                                    </p>
+
+                    @elseif($autoKM)
+                        <p style="color: red; font-size: 16px; margin-bottom: 5px;">
+                            🔥 Tour này đang được giảm
                             <b>
-                                {{ $coupon->type == 'percent' 
-                                    ? $coupon->discount . '%' 
-                                    : number_format($coupon->discount) . ' VNĐ' }}
+                                @if($autoKM->type == 'percent')
+                                    {{ $autoKM->discount }}%
+                                @else
+                                    {{ number_format($autoKM->discount) }} VNĐ
+                                @endif
                             </b>
+                            (tự động áp dụng)
                         </p>
                     @endif
                     <div class="order-coupon">
-                       
+
                         <input type="text" id="coupon_code" placeholder="Mã giảm giá" style="width: 60%">
                         <button type="button" style="width: 30%" onclick="applyCoupon()">Áp dụng</button>
                     </div>
@@ -163,5 +178,7 @@
         </div>
     </form>
 </section>
-
+<script>
+    let autoKM = @json($autoKM);
+</script>
 @include('clients.blocks.footer')

@@ -141,7 +141,8 @@ Route::prefix('admin')->group(function () {
 
     Route::get('/booking', [BookingManagementController::class, 'index'])
         ->name('booking');
-    Route::post('/booking/confirm', [BookingManagementController::class, 'confirmBooking']);
+    Route::post('/booking/confirm', [BookingManagementController::class, 'confirmBooking'])
+        ->name('confirm-booking');
     Route::post('/booking/cancel', [BookingManagementController::class, 'cancelBooking'])
     ->name('booking.cancel');
     Route::post('/booking/delete/{id}', [BookingManagementController::class, 'deleteBooking']);
@@ -153,5 +154,10 @@ Route::prefix('admin')->group(function () {
     Route::post('/user/active', [UserManagementController::class, 'activeUser'])->name('active-user');
 
     Route::post('/user/status', [UserManagementController::class, 'changeStatus'])->name('status-user');
+    Route::post('/send-pdf', [BookingManagementController::class, 'sendPDF'])
+    ->name('send.pdf');
+    Route::post('/booking/received', [BookingManagementController::class, 'receiviedMoney'])
+    ->name('received');
+ 
 
 });

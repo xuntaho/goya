@@ -16,7 +16,7 @@ class DashboardModel extends Model
             ->where('tinhkhadung', 1)
             ->count();
         $countBooking = DB::table('booking')
-            ->where('status', '!=', 'cancelled')
+            ->where('status', 'confirmed')
             ->count();
        $totalAmount = DB::table('thanhtoan')
             ->where('trangthai', 'paid')
@@ -27,7 +27,6 @@ class DashboardModel extends Model
             'totalAmount' => $totalAmount,
         ];
     }
-
     public function getValueDomain()
     {
         return DB::table('tours')
@@ -44,29 +43,38 @@ class DashboardModel extends Model
             ->groupBy('trangthai')
             ->get();
     }   
-
-   public function getMostTourBooked()
+    public function getMostTourBooked()
     {
-    return DB::table('tours')
-        ->leftJoin('booking', 'tours.tourID', '=', 'booking.tourID')
-        ->select(
-            'tours.tourID',
-            'tours.title',
-            'tours.socho',
-            DB::raw('COALESCE(SUM(booking.adult_count + booking.child_count),0) as booked_quantity'),
-            DB::raw('(tours.socho - COALESCE(SUM(booking.adult_count + booking.child_count),0)) as available_slots')
-        )
-        ->groupBy('tours.tourID', 'tours.title', 'tours.socho')
-        ->havingRaw('COALESCE(SUM(booking.adult_count + booking.child_count),0) > 0')
-        ->orderByDesc('booked_quantity')
-        ->take(3)
-        ->get();
+        $sub = DB::table('booking')
+            ->select(
+                'tourID',
+                DB::raw('CAST(SUM(adult_count + child_count) AS UNSIGNED) as booked')
+            )
+            ->where('status', '=', 'confirmed') 
+            ->groupBy('tourID');
+
+        return DB::table('tours')
+            ->joinSub($sub, 'b', function ($join) {
+                $join->on('tours.tourID', '=', 'b.tourID');
+            })
+            ->select(
+                'tours.tourID',
+                'tours.title',
+                'tours.socho',
+                'b.booked as booked_quantity',
+                DB::raw('(tours.socho - b.booked) as available_slots')
+            )
+            ->where('b.booked', '>', 0)
+            ->orderByDesc('booked_quantity')
+            ->limit(4)
+            ->get();
     }
 
     public function getNewBooking()
     {
         return DB::table('booking')
             ->join('tours', 'booking.tourID', '=', 'tours.tourID')
+            ->where('booking.status', '!=', 'cancelled')
             ->select(
                 'booking.bookingID',
                 'booking.username',
@@ -78,23 +86,20 @@ class DashboardModel extends Model
             ->limit(5)
             ->get();
     }
-
-    public function getRevenuePerMonth()
+   public function getRevenuePerMonth()
     {
         $monthlyRevenue = DB::table('booking')
             ->select(DB::raw('MONTH(booking_date) as month, SUM(total_price) as revenue'))
             ->where('status', 'confirmed')
+            ->whereYear('booking_date', date('Y')) // Thêm lọc theo năm hiện tại
             ->groupBy(DB::raw('MONTH(booking_date)'))
             ->orderBy('month', 'asc')
-            
             ->get();
+
         $revenueData = array_fill(0, 12, 0); 
         foreach ($monthlyRevenue as $data) {
-                $revenueData[$data->month - 1] = $data->revenue; 
+            $revenueData[$data->month - 1] = $data->revenue; 
         }
         return $revenueData;
     }
-
-
-
 }

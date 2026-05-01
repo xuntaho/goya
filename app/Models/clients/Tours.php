@@ -10,18 +10,50 @@ class Tours extends Model
     protected $table = 'tours';
     public function getAllTours()
     {
-       return DB::table('tours')->where('tours.ngayketthuc', '>=', now())
+        return DB::table('tours')
+            ->where('tours.ngayketthuc', '>=', now())
             ->leftJoin('booking', 'tours.tourID', '=', 'booking.tourID')
             ->leftJoin('danhgia', 'tours.tourID', '=', 'danhgia.tourID')
+
             ->select(
                 'tours.*',
-                DB::raw('AVG(danhgia.sosao) as avg_rating'),
-                DB::raw('COUNT(danhgia.id) as total_review'),
-                DB::raw('COALESCE(SUM(booking.adult_count + booking.child_count),0) as booked'),
-                DB::raw('(tours.socho - COALESCE(SUM(booking.adult_count + booking.child_count),0)) as conlai')
 
+                DB::raw('AVG(danhgia.sosao) as avg_rating'),
+                DB::raw('COUNT(DISTINCT danhgia.id) as total_review'),
+
+                DB::raw("
+                    COALESCE(SUM(
+                        CASE 
+                            WHEN booking.status = 'confirmed' 
+                            THEN booking.adult_count + booking.child_count 
+                            ELSE 0 
+                        END
+                    ),0) as booked
+                "),
+
+                DB::raw("
+                    (tours.socho - COALESCE(SUM(
+                        CASE 
+                            WHEN booking.status = 'confirmed' 
+                            THEN booking.adult_count + booking.child_count 
+                            ELSE 0 
+                        END
+                    ),0)) as conlai
+                ")
             )
-            ->groupBy('tours.tourID')
+
+            ->groupBy(
+                'tours.tourID',
+                'tours.title',
+                'tours.diemden',
+                'tours.hinh',
+                'tours.gia_nguoiLon',
+                'tours.socho',
+                'tours.ngaybatdau',
+                'tours.ngayketthuc',
+                'tours.thoigian',
+                'tours.mien'
+            )
             ->get();
     }
     public function getchitiet_tour($id)

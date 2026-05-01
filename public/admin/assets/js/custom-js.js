@@ -235,7 +235,7 @@ $('.delete-tour').click(function () {
 
 $(document).on('click', '.btn-cancel', function (e) {
 
-    e.preventDefault(); 
+    e.preventDefault();
 
     let id = $(this).data('id');
 
@@ -244,35 +244,41 @@ $(document).on('click', '.btn-cancel', function (e) {
     }
 
     $.ajax({
-       url: "/admin/booking/cancel",
+        url: "/admin/booking/cancel",
         type: "POST",
         data: {
-            bookingId: id,
-            _token: "{{ csrf_token() }}"
+            bookingID: id,
+            _token: $('meta[name="csrf-token"]').attr('content')
         },
         success: function (res) {
-            alert(res.message);
-            location.reload();
+            if (res.success) {
+                toastr.success("Đã hủy booking!");
+                location.reload();
+            } else {
+                toastr.error(res.message);
+            }
+        },
+        error: function () {
+            toastr.error("Lỗi hệ thống!");
         }
     });
 
 });
-$(document).on('click', '.btn-confirm', function (e) {
+
+$(document).on('click', '.btn-confirm, .confirm-booking', function (e) {
 
     e.preventDefault();
 
     let btn = $(this);
-    let id = btn.data('id');
+    let id = btn.data('id') || btn.data('bookingid');
+    let url = btn.data('url');
+     console.log(id, url);
+    if (!confirm('Xác nhận booking này?')) return;
 
-
-    if (!confirm('Xác nhận booking này?')) {
-        return;
-    }
-    
     btn.prop('disabled', true);
 
     $.ajax({
-        url: "/admin/booking/confirm",
+        url: url,
         type: "POST",
         data: {
             bookingId: id,
@@ -284,16 +290,14 @@ $(document).on('click', '.btn-confirm', function (e) {
 
             let row = btn.closest('tr');
 
-            row.find('.badge')
-                .removeClass('bg-warning')
-                .addClass('bg-success')
-                .text('Đã xác nhận');
+            row.find('td:nth-child(9)')
+                .html('<span style="color:green;">Đã xác nhận</span>');
 
-            btn.remove(); 
-            
+            btn.remove();
         },
 
-        error: function () {
+        error: function (xhr) {
+            console.log(xhr.responseText);
             toastr.error('Lỗi xác nhận!');
             btn.prop('disabled', false);
         }
@@ -309,8 +313,6 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!el) return;
 
     let data = JSON.parse(el.getAttribute('data-payment-method'));
-
-    // chuyển data về format chart
     let chartData = data.map(item => ({
         name: item.trangthai,
         value: item.total

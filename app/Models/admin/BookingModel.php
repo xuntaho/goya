@@ -12,26 +12,25 @@ class BookingModel extends Model
     {
         $query = DB::table('booking')
             ->join('tours', 'booking.tourID', '=', 'tours.tourID')
-            ->leftJoin('users', 'booking.userID', '=', 'users.userID')
             ->select(
                 'booking.*',
-                'tours.title as tour_name',
-                'users.fullname'
+                'tours.title as tour_name'
             );
 
         if (!empty($keyword)) {
+            $query->where(function ($q) use ($keyword) {
 
-        $query->where(function ($q) use ($keyword) {
-            if (is_numeric($keyword) && strlen($keyword) <= 5) {
-                $q->orWhere('booking.bookingID', $keyword);
-            }
-            $q->orWhere('booking.username', 'like', '%' . $keyword . '%')
-            ->orWhere('booking.email', 'like', '%' . $keyword . '%')
-            ->orWhere('booking.phone', 'like', '%' . $keyword . '%') 
-            ->orWhere('tours.title', 'like', '%' . $keyword . '%');
-        });
-    }
-        return $query->orderBy('created_at', 'desc')->get();
+                if (is_numeric($keyword)) {
+                    $q->where('booking.bookingID', $keyword);
+                }
+                $q->orWhere('booking.username', 'like', '%' . $keyword . '%')
+                ->orWhere('booking.email', 'like', '%' . $keyword . '%')
+                ->orWhere('booking.phone', 'like', '%' . $keyword . '%')
+                ->orWhere('tours.title', 'like', '%' . $keyword . '%')
+                ->orWhere('booking.status', 'like', '%' . $keyword . '%');
+            });
+        }
+        return $query->orderBy('booking.created_at', 'desc')->get();
     }
     public function getBookingById($id)
     {

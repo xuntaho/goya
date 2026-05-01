@@ -222,15 +222,15 @@
                            <hr>
                             <div style="display:flex; gap:10px;">
                                 <b style="min-width:150px;">Số chỗ còn lại :</b>
-                                @php
-                                    $booked = DB::table('booking')
-                                        ->where('tourID', $chitiet_tour->tourID)
-                                        ->where('status', 'confirmed')
-                                        ->sum(DB::raw('adult_count + child_count'));
+                               @php
+                                $booked = DB::table('booking')
+                                    ->where('tourID', $chitiet_tour->tourID)
+                                    ->where('status', 'confirmed')
+                                    ->selectRaw('SUM(adult_count + child_count) as total')
+                                    ->value('total') ?? 0;
 
-                                    $conlai = $chitiet_tour->socho - $booked;
-                                @endphp
-
+                                $conlai = $chitiet_tour->socho - $booked;
+                            @endphp
                                 <span style="flex:1; ">
                                     @if($conlai <= 0)
                                         <span style="color:red;">Hết chỗ</span>

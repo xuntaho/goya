@@ -88,10 +88,12 @@
                                                         👁
                                                     </a>
                                                     @if($b->status == 'pending')
-                                                        <button type="button" class="btn btn-success btn-sm btn-confirm"
-                                                            data-id="{{ $b->bookingID }}">
+                                                        <button class="btn btn-success btn-sm btn-confirm"
+                                                            data-id="{{ $b->bookingID }}"
+                                                            data-url="{{ route('admin.confirm-booking') }}">
                                                             ✔
                                                         </button>
+                                                        
                                                     @endif
                                                     @if($b->status != 'cancelled')
                                                         <button type="button" class="btn btn-danger btn-sm btn-cancel"
