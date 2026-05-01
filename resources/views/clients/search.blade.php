@@ -13,19 +13,13 @@
 
                 @foreach ($tours as $tour)
                     <div class="col-xl-4 col-md-6" style="margin-bottom: 30px">
-
                         <div class="destination-item tour-grid style-three bgc-lighter">
-
-                            {{-- IMAGE --}}
                             <div class="image">
                                 <a href="#" class="heart"><i class="fas fa-heart"></i></a>
-
                                 <img src="{{ $tour->hinh }}" alt="Tour">
                             </div>
 
-                            {{-- CONTENT --}}
                             <div class="content">
-
                                 <div class="destination-header">
                                     <span class="location">
                                         <i class="fal fa-map-marker-alt"></i>
@@ -41,23 +35,26 @@
                                             @endif
                                         @endfor
                                     </div>
-
                                     <span>({{ $tour->total_review }} đánh giá)</span>
                                 </div>
 
-                                {{-- TITLE --}}
                                 <h5>
                                     <a href="{{ route('chitiet_tour', $tour->tourID) }}">
                                         {{ $tour->title }}
                                     </a>
                                 </h5>
 
-                                {{-- META --}}
-                                <ul class="blog-meta">
-                                    <li><i class="far fa-clock"></i> {{ $tour->thoigian }}</li>
-                                </ul>
+                                @php
+                                    $start = \Carbon\Carbon::parse($tour->ngaybatdau);
+                                    $end = \Carbon\Carbon::parse($tour->ngayketthuc);
+                                    $days = $start->diffInDays($end) + 1;
+                                    $nights = $days - 1;
+                                @endphp
 
-                                {{-- PRICE --}}
+                                <span class="time">
+                                    {{ $days }}N{{ $nights }}Đ
+                                </span>
+
                                 <div class="destination-footer">
                                     <span class="price">
                                         <span>{{ number_format($tour->gia_nguoiLon) }}đ</span> / người
@@ -69,15 +66,11 @@
                                         <i class="fal fa-arrow-right"></i>
                                     </a>
                                 </div>
-
                             </div>
                         </div>
-
                     </div>
                 @endforeach
-
             @endif
-
         </div>
     </div>
 </section>
